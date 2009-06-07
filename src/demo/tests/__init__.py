@@ -30,7 +30,7 @@ def setup_func():
     # We need a global site manager to register our greetings view.
     demo.app.initGlobalSiteManager()
 
-    # For some reason the test expexts following environment variable
+    # For some reason the test expects following environment variable
     # to be set.
     os.environ['USER_EMAIL'] = 'foo@bar.net'
 
