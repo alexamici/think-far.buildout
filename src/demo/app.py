@@ -99,8 +99,8 @@ class MainPage(object):
         return template(view=self, context=self.context, request=self.request)
 
 
-class Guestbook(google.appengine.ext.webapp.RequestHandler):
-    """The guestbook."""
+class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
+    """The demo request handler."""
 
     def get(self):
         """Handles GET."""
@@ -132,7 +132,7 @@ def application():
 
     # We register some request handlers for our application.
     app = google.appengine.ext.webapp.WSGIApplication([
-        ('/', Guestbook), 
+        ('/', DemoRequestHandler), 
     ], debug=True)
 
     return app
