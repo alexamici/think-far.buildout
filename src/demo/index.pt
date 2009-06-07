@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C //DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ZCA on Google App Engine</title>
+    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
+    <!--[if lt IE 8]>
+      <link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection">
+    <![endif]-->
+    <link rel="stylesheet" href="/css/styles.css" type="text/css" media="all" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Zope Component Architecture on Google App Engine</h1>
+      <hr>
+      <h2 class="emph">
+        This tiny application demonstrates the usage of various zope packages.
+      </h2>
+      <hr>
+      <div class="span-18 colborder">
+        <h3>Introduction</h3>
+      </div>
+      <div class="span-5 last">
+        <h3>What do <span class="emph">you</span> think?</h3>
+        <p>Leave a comment if you like.</p>
+        <form action="/" method="post">
+          <textarea name="content" class="span-5 comments"></textarea>
+          <input type="submit" value="Submit">
+        </form>
+        <div tal:replace="structure view/greetings" />
+      </div>
+    </div>
+  </body>
+</html>

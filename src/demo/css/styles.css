@@ -1,0 +1,59 @@
+h1
+{
+    color: #111;
+    font-size: 2.5em;
+}
+
+h2
+{
+    color: #111;
+    font-size: 2em;
+}
+
+strong
+{
+    color: #111;
+}
+
+label
+{
+    color: #111;
+    display: block;
+    font-weight: bold;
+}
+
+a
+{
+    border: none;
+    text-decoration: none;
+}
+
+a:hover
+{
+    border: none;
+    text-decoration: none;
+}
+
+a:visited
+{
+    border: none;
+    text-decoration: none;
+}
+
+img
+{
+    border: none;
+}
+
+.emph
+{ 
+    color: #666; 
+    font-family: "Warnock Pro", "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif; 
+    font-style: italic;
+    font-weight: normal;
+}
+
+textarea.comments
+{
+    height: 40px;
+}
