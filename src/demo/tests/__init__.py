@@ -16,6 +16,7 @@
 
 import demo.app
 import demo.interfaces
+import demo.session
 import nose.tools
 import os
 import webtest
@@ -53,3 +54,10 @@ def test_post():
     app.post('/', {'content':'foobar'})
     response = app.get('/')
     assert '<b>foo@bar.net</b> wrote:<div>foobar' in response.body
+
+
+def test_sessions():
+    """Testing the session manager"""
+
+    sessions = demo.session.SessionManager('test')
+    assert repr(sessions) == "SessionManager(test)"

@@ -25,13 +25,14 @@ import interfaces
 import logging
 import os
 import pagetemplate
+import session
 import wsgiref.handlers
 import zope.component
 import zope.interface
 
 
-GLOBAL_SITE_MANAGER = None  # The global site manager for registering adapters
-                            # and utilities.
+_global_site_manager = None  # The global site manager for registering adapters
+                             # and utilities.
 
 
 class Greeting(google.appengine.ext.db.Model):
@@ -78,9 +79,9 @@ class MainPage(object):
     def greetings(self):
         """Returns rendered greetings."""
 
-        greetings = google.appengine.ext.db.GqlQuery("SELECT * "
-                            "FROM Greeting "
-                            "ORDER BY date DESC LIMIT 10")
+        greetings = google.appengine.ext.db.GqlQuery(
+                                                "SELECT * FROM Greeting "
+                                                "ORDER BY date DESC LIMIT 10")
 
         output = []
 
@@ -109,9 +110,13 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         # interface to be adaptable.
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
 
-        # This is our main page.
+        # Lookup our session manager.
+        if _global_site_manager:
+            sm = _global_site_manager.getUtility(interfaces.ISessionManager)
+
+        # The MainPage adapter takes a context and the request object. We write
+        # its rendered output to the resonse object.
         page = MainPage(self, self.request)
-        # Let's write the rendered output to the resonse object.
         self.response.out.write(page.render())
 
     def post(self):
@@ -145,16 +150,20 @@ def initGlobalSiteManager():
     Google App Engine caches the global site manager between requests.
     """
 
-    global GLOBAL_SITE_MANAGER
+    global _global_site_manager
 
-    if GLOBAL_SITE_MANAGER is None:
+    if _global_site_manager is None:
         logging.info("Creating global site manager")
-        GLOBAL_SITE_MANAGER = zope.component.getGlobalSiteManager()
+        _global_site_manager = zope.component.getGlobalSiteManager()
 
         # Now we register an adapter.
-        GLOBAL_SITE_MANAGER.registerAdapter(GreetingsView,
+        _global_site_manager.registerAdapter(GreetingsView,
                                 (interfaces.IGreeting, interfaces.IRequest),
                                 interfaces.IGreetingsView)
+
+        # We need a global utility for managing sessions.
+        _global_site_manager.registerUtility(session.SessionManager('demo'))
+
 
 def main():
     """The main function."""

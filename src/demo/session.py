@@ -12,32 +12,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
-"""Interface definitions."""
+"""Lightweight implementation for session management."""
 
+import interfaces
+import logging
 import zope.interface
 
 
-class IRequest(zope.interface.Interface):
-    """Marker interface for request objects."""
+class SessionManager(object):
+    """The global session manager."""
 
+    zope.interface.implements(interfaces.ISessionManager)
 
-class IGreeting(zope.interface.Interface):
-    """Marker interface for greetings."""
+    def __init__(self, name):
+        self.__name__ = name
+        logging.info("Creating session manager")
 
-
-class IGreetingsView(zope.interface.Interface):
-    """Views for greetings should implement this interface."""
-
-    def render():
-        """Renders HTML output."""
-
-
-class IPage(zope.interface.Interface):
-    """Interface for pages."""
-
-    def render():
-        """Renders HTML output."""
-
-
-class ISessionManager(zope.interface.Interface):
-    """Interface for the global session manager."""
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, self.__name__)
