@@ -139,6 +139,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             greeting.content = content
             greeting.put()
             self.redirect('/')
+            return
 
         self.redirect('/?status=Enter%20some%20text!')
 
