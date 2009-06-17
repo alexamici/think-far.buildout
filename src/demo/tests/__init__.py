@@ -49,11 +49,20 @@ def test_index():
 
 @nose.tools.with_setup(setup_func, teardown_func)
 def test_post():
-    """Posting a greeting"""
+    """Posting greeting"""
 
     app.post('/', {'content':'foobar'})
     response = app.get('/')
     assert '<b>foo@bar.net</b> wrote:<div>foobar' in response.body
+
+
+@nose.tools.with_setup(setup_func, teardown_func)
+def test_post_empty():
+    """Posting empty greeting"""
+
+    response = app.post('/')
+    nose.tools.assert_equal('http://localhost/?status=Enter%20some%20text!',
+                            response.location)
 
 
 def test_sessions():
