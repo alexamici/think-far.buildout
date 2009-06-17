@@ -92,6 +92,13 @@ class MainPage(object):
 
         return u''.join(output)
 
+    def status(self):
+        """Returns a status message by parsing the query string."""
+        if u'status' in self.request.arguments():
+            return self.request.get(u'status')
+
+        return None
+
     def render(self):
         """Writes rendered output to the response object."""
         template = pagetemplate.PageTemplate(
@@ -127,9 +134,13 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         if google.appengine.api.users.get_current_user():
             greeting.author = google.appengine.api.users.get_current_user()
 
-        greeting.content = self.request.get('content')
-        greeting.put()
-        self.redirect('/')
+        content = self.request.get('content')
+        if content:
+            greeting.content = content
+            greeting.put()
+            self.redirect('/')
+
+        self.redirect('/?status=Enter%20some%20text!')
 
 
 def application():

@@ -33,6 +33,9 @@
       <div class="span-5 last">
         <h3>What do <span class="emph">you</span> think?</h3>
         <p>Leave a comment if you like.</p>
+        <span class="emph"
+              tal:condition="view/status"
+              tal:content="view/status" />
         <form action="/" method="post">
           <textarea name="content" class="span-5 comments"></textarea>
           <input type="submit" value="Submit">
