@@ -40,9 +40,10 @@ a:visited
     text-decoration: none;
 }
 
-img
+img.right
 {
-    border: none;
+    float: right;
+    margin-left: 5px;
 }
 
 .emph
