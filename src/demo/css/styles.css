@@ -1,13 +1,25 @@
+.header
+{
+    background-image: url(../images/gradient.gif);
+    height: 44px;
+    border-bottom: 1px solid #888;
+}
+
+.headline
+{
+    padding-top: 10px;
+}
+
 h1
 {
     color: #111;
-    font-size: 2.5em;
+    font-size: 2em;
 }
 
 h2
 {
     color: #111;
-    font-size: 2em;
+    font-size: 1.8em;
 }
 
 strong
@@ -57,4 +69,11 @@ img.right
 textarea.comments
 {
     height: 40px;
+}
+
+span.gaebutton
+{
+    position: relative;
+    float: right;
+    margin: 7px 7px 0 0;
 }

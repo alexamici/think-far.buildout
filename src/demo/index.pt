@@ -13,22 +13,28 @@
       <link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection">
     <![endif]-->
     <link rel="stylesheet" href="/css/styles.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/css/print.css" type="text/css" media="print" />
   </head>
   <body>
     <div class="container">
-      <h1>Zope Component Architecture on Google App Engine</h1>
-      <hr>
-      <h2 class="emph">
-        This tiny application demonstrates the usage of various zope packages.
-      </h2>
+      <div class="span-24 header"><span class="gaebutton"><a href="http://code.google.com/appengine"><img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></a></span></div>
+      <div class="span-24 headline">
+        <h1>Zope Component Architecture on Google App Engine</h1>
+        <hr>
+        <h2 class="emph">
+          Bring together what belongs together - growing with modern building
+          materials.
+        </h2>
+      </div>
       <hr>
       <div class="span-17 colborder">
         <p>
           The <strong>Zope Component Architecture (ZCA)</strong> is a Python
           framework for supporting component based design and programming. The
           ZCA is not specific to the <a href="http://www.zope.org">Zope</a>
-          web application server. Therefore developing on Google App Engine in
-          combination with ZCA is very interesting in many ways.
+          web application server. Therefore using the ZCA within
+          <a href="http://code.google.com/appengine">Google App Engine</a> is
+          very interesting in many ways.
         </p>
         <img class="right" src="/images/stack.jpg" />
         <p>

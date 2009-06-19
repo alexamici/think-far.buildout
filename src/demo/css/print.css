@@ -1,0 +1,4 @@
+span.gaebutton, textarea.comments
+{
+    visibility: hidden;
+}
