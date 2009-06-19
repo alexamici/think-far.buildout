@@ -1,9 +1,4 @@
-.gaebutton
-{
-    visibility: hidden;
-}
-
-#comments
+#header, #comments
 {
     visibility: hidden;
 }
