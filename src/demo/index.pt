@@ -17,7 +17,12 @@
   </head>
   <body>
     <div class="container">
-      <div class="span-24 header"><span class="gaebutton"><a href="http://code.google.com/appengine"><img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></a></span></div>
+      <div id="header" class="span-24">
+        <a href="http://code.google.com/p/bridal">Project Page</a>
+        <span>|</span>
+        <a href="http://code.google.com/p/bridal/source/browse/#svn/trunk/demo">Source Code</a>
+        <a href="http://code.google.com/appengine"><img class="gaebutton" src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></a>
+      </div>
       <div class="span-24 headline">
         <h1>Zope Component Architecture on Google App Engine</h1>
         <hr>
@@ -38,18 +43,10 @@
         </p>
         <img class="right" src="/images/stack.jpg" />
         <p>
-          Implement <strong>views</strong> by using adapters. Register
-          <strong>utilities</strong> to handle sessions and so on.
+          The diagram shows a relatively small stack of components running under
+          the hood of this demo. It uses the ZCA for implementing views
+          (adapter) and a global session management utility.
         </p>
-        <p>
-          This demo also benefits from other achievements of the community.
-        </p>
-        <ul>
-          <li><a href="http://pypi.python.org/pypi/zc.buildout">zc.buildout
-            </a></li>
-          <li><a href="http://somethingaboutorange.com/mrl/projects/nose">nose
-            </a> testing</li>
-        </ul>
       </div>
       <div class="span-6 last">
         <h3>What <span class="emph">is</span> the ZCA?</h3>
@@ -58,19 +55,18 @@
           reusable objects with introspectable interfaces. An interface is an
           object that describes how you work with a particular component. It
           doesn't matter how the component is implemented, the important part
-          is that it comply with its interface contracts. Using ZCA, you can
-          spread the complexity of systems over multiple cooperating components.
+          is that it comply with its interface contracts.
         </p>
         <p>
           <a href="http://muthukadan.net/docs/zca.html">Comprehensive Guide to
           the Zope Component Architecture</a>.
         </p>
         <h3>What do <span class="emph">you</span> think?</h3>
-        <p>Leave a comment if you like.</p>
         <span class="emph"
               tal:condition="view/status"
               tal:content="view/status" />
-        <form action="/" method="post">
+        <form id="comments" action="/" method="post">
+          <label for="content">Leave a comment if you like.</label>
           <textarea name="content" class="span-6 comments"></textarea>
           <input type="submit" value="Submit">
         </form>
