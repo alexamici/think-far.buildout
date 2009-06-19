@@ -26,6 +26,7 @@ import logging
 import os
 import pagetemplate
 import session
+import urllib
 import wsgiref.handlers
 import zope.component
 import zope.interface
@@ -141,7 +142,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             self.redirect('/')
             return
 
-        self.redirect('/?status=Enter%20some%20text!')
+        self.redirect('/?status=%s' % urllib.quote('Enter some text!'))
 
 
 def application():

@@ -19,6 +19,7 @@ import demo.interfaces
 import demo.session
 import nose.tools
 import os
+import urllib
 import webtest
 import zope.component
 
@@ -61,7 +62,8 @@ def test_post_empty():
     """Posting empty greeting"""
 
     response = app.post('/')
-    nose.tools.assert_equal('http://localhost/?status=Enter%20some%20text!',
+    nose.tools.assert_equal('http://localhost/?status=%s' % 
+                            urllib.quote('Enter some text!'),
                             response.location)
 
 
