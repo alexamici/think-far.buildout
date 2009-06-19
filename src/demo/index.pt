@@ -19,7 +19,7 @@
     <div class="container">
       <div id="header" class="span-24">
         <a href="http://code.google.com/p/bridal">Project Page</a>
-        <span>|</span>
+        <span>&nbsp;</span>
         <a href="http://code.google.com/p/bridal/source/browse/#svn/trunk/demo">Source Code</a>
         <a href="http://code.google.com/appengine"><img class="gaebutton" src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></a>
       </div>

@@ -8,7 +8,10 @@ div#header
 
 #header span
 {
+    background: url(../images/separator.gif) no-repeat;
+    font-size: 18px;
     margin: 0 10px 0 10px;
+    width: 1px;
 }
 
 #header a
@@ -19,11 +22,6 @@ div#header
     font-style: italic;
     font-weight: normal;
     margin: 6px;
-}
-
-.headerlink:hover, .headerlink:visited
-{
-    color: #333;
 }
 
 .gaebutton
