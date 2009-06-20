@@ -95,13 +95,12 @@ class MainPage(object):
 
     def status(self):
         """Returns a status message by parsing the query string."""
-        if u'status' in self.request.arguments():
-            return self.request.get(u'status')
 
-        return None
+        return self.request.get(u'status')
 
     def render(self):
         """Writes rendered output to the response object."""
+
         template = pagetemplate.PageTemplate(
                         os.path.join(os.path.split(__file__)[0], 'index.pt'))
 
