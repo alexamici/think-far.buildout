@@ -112,6 +112,13 @@ class MainPage(object):
         return template(view=self, context=self.context, request=self.request)
 
 
+class Context(object):
+    """Provides a simple context object."""
+
+    def __init__(self, session):
+        self.session = session
+
+
 class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
     """The demo request handler."""
 
@@ -123,6 +130,8 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
         zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
+        session = None
+
         # Lookup our session manager.
         if _global_site_manager:
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
@@ -131,7 +140,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the resonse object.
-        page = MainPage(self, self.request)
+        page = MainPage(Context(session), self.request)
         self.response.out.write(page.render())
 
     def post(self):

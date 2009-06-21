@@ -22,6 +22,10 @@ import random
 import re
 import time
 import zope.interface
+ 
+
+SESSION_LIFETIME = 10
+UPDATE_PERIOD    = 10
 
 
 class Session(object):
@@ -29,8 +33,9 @@ class Session(object):
 
     zope.interface.implements(interfaces.ISession)
 
-    def __init__(self, id):
+    def __init__(self, id, expiration_date):
         self.id = id
+        self.expiration_date = expiration_date
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
@@ -42,13 +47,25 @@ class SessionManager(object):
     zope.interface.implements(interfaces.ISessionManager)
 
     def __init__(self, name):
-        self.__name__    = name
-        self.cookie_name = name + '_session'
-        self.sessions    = {}
+        self.__name__     = name
+        self.cookie_name  = name + '_session'
+        self.sessions     = {}
+        self.last_updated = time.time()
         logging.info("Creating session manager")
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.__name__)
+
+    def purge_sessions(self):
+        now = time.time()
+        if (now - self.last_updated) > UPDATE_PERIOD:
+            expired_sessions = []
+            for s in self.sessions:
+                if (now - self.sessions[s].expiration_date) > SESSION_LIFETIME:
+                    expired_sessions.insert(0, s)
+            while expired_sessions:
+                del self.sessions[expired_sessions.pop()]
+            self.last_updated = now
 
     def get_session(self, request, response):
         if not interfaces.IRequest.providedBy(request):
@@ -58,8 +75,15 @@ class SessionManager(object):
 
         # Try to obtain a session id from a cookie.
         sid = request.cookies.get(self.cookie_name)
+        session = None
 
-        if not sid:
+        # Remove expired sessions.
+        self.purge_sessions()
+
+        if sid:
+            session = self.sessions.get(sid)
+
+        if not session:
             # We need a new session id.
             m = hashlib.md5()
             m.update(str(time.time()+random.random()))
@@ -68,8 +92,13 @@ class SessionManager(object):
             # Write a new cookie.
             c = Cookie.SimpleCookie()
             c[self.cookie_name] = sid
-            c[self.cookie_name]['expires'] = 10
+            expiration_date = time.time() + SESSION_LIFETIME
+            c[self.cookie_name]['expires'] = SESSION_LIFETIME
             h = re.compile('^Set-Cookie: ').sub('', c.output(), count=1)
             response.headers.add_header('Set-Cookie', str(h))
 
-        return Session(sid)
+            # Create session object.
+            session = Session(sid, expiration_date)
+            self.sessions[sid] = session
+
+        return session

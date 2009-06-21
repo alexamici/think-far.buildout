@@ -106,5 +106,4 @@ def test_sessions():
 
     app.get('/')
 
-    # TODO: Testing for newly added session objects.
-    #assert len(session_manager.sessions) == 1
+    assert len(session_manager.sessions) == 1

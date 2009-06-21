@@ -52,5 +52,8 @@ class ISession(zope.interface.Interface):
 class ISessionManager(zope.interface.Interface):
     """Interface for the global session manager."""
 
+    def purge_sessions():
+        """Deletes expired sessions."""
+
     def get_session(request, response):
         """Returns a session object."""
