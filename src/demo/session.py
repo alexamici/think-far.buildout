@@ -24,8 +24,8 @@ import time
 import zope.interface
  
 
-SESSION_LIFETIME = 10
-UPDATE_PERIOD    = 10
+SESSION_LIFETIME = 600
+UPDATE_PERIOD    = 120
 
 
 class Session(object):
@@ -33,12 +33,16 @@ class Session(object):
 
     zope.interface.implements(interfaces.ISession)
 
-    def __init__(self, id, expiration_date):
-        self.id = id
-        self.expiration_date = expiration_date
+    def __init__(self, id):
+        self.id      = id
+        self.expires = None
+        self.refresh()
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
+
+    def refresh(self):
+        self.expires = time.time() + SESSION_LIFETIME
 
 
 class SessionManager(object):
@@ -61,7 +65,7 @@ class SessionManager(object):
         if (now - self.last_updated) > UPDATE_PERIOD:
             expired_sessions = []
             for s in self.sessions:
-                if (now - self.sessions[s].expiration_date) > SESSION_LIFETIME:
+                if now > self.sessions[s].expiration_date:
                     expired_sessions.insert(0, s)
             while expired_sessions:
                 del self.sessions[expired_sessions.pop()]
@@ -83,7 +87,9 @@ class SessionManager(object):
         if sid:
             session = self.sessions.get(sid)
 
-        if not session:
+        if session:
+            session.refresh()
+        else:
             # We need a new session id.
             m = hashlib.md5()
             m.update(str(time.time()+random.random()))
@@ -92,13 +98,11 @@ class SessionManager(object):
             # Write a new cookie.
             c = Cookie.SimpleCookie()
             c[self.cookie_name] = sid
-            expiration_date = time.time() + SESSION_LIFETIME
-            c[self.cookie_name]['expires'] = SESSION_LIFETIME
             h = re.compile('^Set-Cookie: ').sub('', c.output(), count=1)
             response.headers.add_header('Set-Cookie', str(h))
 
             # Create session object.
-            session = Session(sid, expiration_date)
+            session = Session(sid)
             self.sessions[sid] = session
 
         return session

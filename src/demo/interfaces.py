@@ -46,7 +46,11 @@ class IPage(zope.interface.Interface):
 class ISession(zope.interface.Interface):
     """Sessions allow associating information with individual visitors."""
 
-    id = zope.interface.Attribute("Unique session id")
+    id      = zope.interface.Attribute("Unique session id")
+    expires = zope.interface.Attribute("Expiration time")
+
+    def refresh():
+        """Refresh the session."""
 
 
 class ISessionManager(zope.interface.Interface):

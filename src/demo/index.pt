@@ -77,8 +77,8 @@
         </form>
         <div tal:replace="structure view/greetings" />
       </div>
-      <div class="span-24">
-        <pre align="right" tal:content="context/session" />
+      <div class="span-24" align="right">
+        <pre tal:content="context/session" />
       </div>
     </div>
   </body>
