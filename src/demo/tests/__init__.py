@@ -40,6 +40,8 @@ def setup_func():
 def teardown_func():
     """Tear down test fixtures."""
 
+    demo.app._global_site_manager = None
+
 
 def test_index():
     """Testing whether our application responds"""
@@ -67,8 +69,31 @@ def test_post_empty():
                             response.location)
 
 
-def test_sessions():
-    """Testing the session manager"""
+def test_session_manager():
+    """Testing session manager"""
 
-    sessions = demo.session.SessionManager('test')
-    assert repr(sessions) == "SessionManager(test)"
+    session_manager = demo.session.SessionManager('test')
+    assert repr(session_manager) == "SessionManager(test)"
+
+
+@nose.tools.raises(TypeError)
+def test_session_manager_error():
+    """Testing session manager exception"""
+
+    session_manager = demo.session.SessionManager('test')
+    session_manager.get_session(object(), object())
+
+
+@nose.tools.with_setup(setup_func, teardown_func)
+def test_sessions():
+    """Testing sessions"""
+
+    site_manager    = demo.app.globalSiteManager()
+    session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
+
+    nose.tools.assert_equal(session_manager.sessions, {})
+
+    app.get('/')
+
+    # TODO: Testing for newly added session objects.
+    #assert len(session_manager.sessions) == 1

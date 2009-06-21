@@ -35,6 +35,11 @@ import zope.interface
 _global_site_manager = None  # The global site manager for registering adapters
                              # and utilities.
 
+def globalSiteManager():
+    """Returns global site manager."""
+
+    return _global_site_manager
+
 
 class Greeting(google.appengine.ext.db.Model):
     """Model declaration for greetings."""
@@ -113,13 +118,15 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
     def get(self):
         """Handles GET."""
 
-        # The Google App Engine request object must provide a special marker
-        # interface to be adaptable.
+        # The request object as well as the response object must provide a
+        # special marker interface to be adaptable.
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
+        zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
         # Lookup our session manager.
         if _global_site_manager:
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
+            session = sm.get_session(self.request, self.response)
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the resonse object.

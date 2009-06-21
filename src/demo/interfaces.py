@@ -21,6 +21,10 @@ class IRequest(zope.interface.Interface):
     """Marker interface for request objects."""
 
 
+class IResponse(zope.interface.Interface):
+    """Marker interface for response objects."""
+
+
 class IGreeting(zope.interface.Interface):
     """Marker interface for greetings."""
 
@@ -39,5 +43,14 @@ class IPage(zope.interface.Interface):
         """Renders HTML output."""
 
 
+class ISession(zope.interface.Interface):
+    """Sessions allow associating information with individual visitors."""
+
+    id = zope.interface.Attribute("Unique session id")
+
+
 class ISessionManager(zope.interface.Interface):
     """Interface for the global session manager."""
+
+    def get_session(request, response):
+        """Returns a session object."""
