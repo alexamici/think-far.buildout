@@ -32,6 +32,9 @@ class Session(object):
     def __init__(self, id):
         self.id = id
 
+    def __repr__(self):
+        return "Session(id='%s')" % self.id
+
 
 class SessionManager(object):
     """The global session manager."""
@@ -39,8 +42,9 @@ class SessionManager(object):
     zope.interface.implements(interfaces.ISessionManager)
 
     def __init__(self, name):
-        self.__name__ = name
-        self.sessions = {}
+        self.__name__    = name
+        self.cookie_name = name + '_session'
+        self.sessions    = {}
         logging.info("Creating session manager")
 
     def __repr__(self):
@@ -52,21 +56,20 @@ class SessionManager(object):
         if not interfaces.IResponse.providedBy(response):
             raise TypeError, "%s must implement IResponse" % response
 
-        sid = request.cookies.get('__demo')
+        # Try to obtain a session id from a cookie.
+        sid = request.cookies.get(self.cookie_name)
 
-        if sid:
-            logging.info(sid)
-        else:
+        if not sid:
+            # We need a new session id.
             m = hashlib.md5()
             m.update(str(time.time()+random.random()))
             sid = m.hexdigest()
-            c = Cookie.SimpleCookie()
-            c['__demo'] = sid
-            c['__demo']['expires'] = 600
-            h = c.output()
-            re_obj = re.compile('^Set-Cookie: ')
-            response.headers.add_header('Set-Cookie',
-                                        str(re_obj.sub('', h, count=1)))
 
-        # TODO: Creating and returning session objects.
-        return None
+            # Write a new cookie.
+            c = Cookie.SimpleCookie()
+            c[self.cookie_name] = sid
+            c[self.cookie_name]['expires'] = 10
+            h = re.compile('^Set-Cookie: ').sub('', c.output(), count=1)
+            response.headers.add_header('Set-Cookie', str(h))
+
+        return Session(sid)

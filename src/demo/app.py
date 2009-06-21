@@ -127,6 +127,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         if _global_site_manager:
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
             session = sm.get_session(self.request, self.response)
+            logging.info(str(session))
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the resonse object.
