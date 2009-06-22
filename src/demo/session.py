@@ -65,7 +65,7 @@ class SessionManager(object):
         if (now - self.last_updated) > UPDATE_PERIOD:
             expired_sessions = []
             for s in self.sessions:
-                if now > self.sessions[s].expiration_date:
+                if now > self.sessions[s].expires:
                     expired_sessions.insert(0, s)
             while expired_sessions:
                 del self.sessions[expired_sessions.pop()]
