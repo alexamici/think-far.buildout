@@ -26,7 +26,7 @@ import threading
 import time
 import zope.interface
 
-SESSION_LIFETIME = 600  # 5 minutes
+SESSION_LIFETIME = 600  # 10 minutes
 UPDATE_PERIOD    = 120  # 2 minutes
 
 
