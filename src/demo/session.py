@@ -14,18 +14,20 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Lightweight implementation for session management."""
 
+from __future__ import with_statement
+
 import Cookie
 import hashlib
 import interfaces
 import logging
 import random
 import re
+import threading
 import time
 import zope.interface
- 
 
-SESSION_LIFETIME = 600
-UPDATE_PERIOD    = 120
+SESSION_LIFETIME = 600  # 5 minutes
+UPDATE_PERIOD    = 120  # 2 minutes
 
 
 class Session(object):
@@ -54,6 +56,7 @@ class SessionManager(object):
         self.__name__     = name
         self.cookie_name  = name + '_session'
         self.sessions     = {}
+        self.lock         = threading.Lock()
         self.last_updated = time.time()
         logging.info("Creating session manager")
 
@@ -61,15 +64,16 @@ class SessionManager(object):
         return "%s(%s)" % (self.__class__.__name__, self.__name__)
 
     def purge_sessions(self):
-        now = time.time()
-        if (now - self.last_updated) > UPDATE_PERIOD:
-            expired_sessions = []
-            for s in self.sessions:
-                if now > self.sessions[s].expires:
-                    expired_sessions.insert(0, s)
-            while expired_sessions:
-                del self.sessions[expired_sessions.pop()]
-            self.last_updated = now
+        with self.lock:
+            now = time.time()
+            if (now - self.last_updated) > UPDATE_PERIOD:
+                expired_sessions = []
+                for s in self.sessions:
+                    if now > self.sessions[s].expires:
+                        expired_sessions.insert(0, s)
+                while expired_sessions:
+                    del self.sessions[expired_sessions.pop()]
+                self.last_updated = now
 
     def get_session(self, request, response):
         if not interfaces.IRequest.providedBy(request):
