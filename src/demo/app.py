@@ -146,15 +146,21 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
     def post(self):
         """Handles POST."""
 
-        greeting = Greeting()
-
-        if google.appengine.api.users.get_current_user():
-            greeting.author = google.appengine.api.users.get_current_user()
-
+        # Get contents from the request.
         content = self.request.get('content')
+
         if content:
+            # So we create a greeting instance.
+            greeting = Greeting()
+
+            if google.appengine.api.users.get_current_user():
+                greeting.author = google.appengine.api.users.get_current_user()
+
             greeting.content = content
+
+            # And put it to the db.
             greeting.put()
+
             self.redirect('/')
             return
 
