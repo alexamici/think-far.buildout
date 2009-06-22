@@ -138,7 +138,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             session = sm.get_session(self.request, self.response)
 
         # The MainPage adapter takes a context and the request object. We write
-        # its rendered output to the resonse object.
+        # its rendered output to the response object.
         page = MainPage(Context(session), self.request)
         self.response.out.write(page.render())
 
