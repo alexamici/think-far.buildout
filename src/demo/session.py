@@ -52,10 +52,13 @@ class SessionManager(object):
 
     zope.interface.implements(interfaces.ISessionManager)
 
-    def __init__(self, name, dictionary={}):
+    def __init__(self, name, dictionary=None):
         self.__name__     = name
         self.cookie_name  = name + '_session'
-        self.sessions     = dictionary
+        if dictionary:
+            self.sessions = dictionary
+        else:
+            self.sessions = {}
         self.lock         = threading.Lock()
         self.last_updated = time.time()
         logging.info("Creating session manager")
