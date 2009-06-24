@@ -39,18 +39,24 @@
       <hr>
       <div class="span-17 colborder">
         <p>
-          The <strong>Zope Component Architecture (ZCA)</strong> is a Python
-          framework for supporting component based design and programming. The
-          ZCA is not specific to the <a href="http://www.zope.org">Zope</a>
-          web application server. Therefore using the ZCA within
+          <span class="capital">T</span>he Zope Component Architecture <strong>
+          (ZCA)</strong> is a Python framework for supporting component based
+          design and programming. The ZCA is not specific to the
+          <a href="http://www.zope.org">Zope</a> web application server.
+          Therefore using the ZCA within
           <a href="http://code.google.com/appengine">Google App Engine</a> is
           very interesting in many ways.
         </p>
         <img class="right" src="/images/stack.jpg" />
         <p>
-          The diagram shows a relatively small stack of components running under
-          the hood of this demo. It uses the ZCA for implementing views
-          (adapter) and a global session management utility.
+          <span class="capital">O</span>ur diagram shows a relatively small
+          stack of components running under the hood of this demo. It uses the
+          ZCA for implementing views (adapters) and a global session management 
+          utility.
+        </p>
+        <p>
+          <span class="capital">A</span>nd this page is rendered by the Zope
+          Page Template package.
         </p>
       </div>
       <div class="span-6 last">

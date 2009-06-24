@@ -94,6 +94,14 @@ img.right
     font-weight: normal;
 }
 
+.capital
+{ 
+    font-family: "Warnock Pro", "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif; 
+    font-size: 1.5em;
+    font-weight: normal;
+    letter-spacing: -1pt;
+}
+
 .hidden
 {
     display: none;
