@@ -47,16 +47,14 @@ h2
     font-size: 1.8em;
 }
 
+p
+{
+    line-height: 1.5em;
+}
+
 strong
 {
     color: #111;
-}
-
-label
-{
-    color: #111;
-    display: block;
-    font-weight: bold;
 }
 
 a
@@ -99,7 +97,6 @@ img.right
     font-family: "Warnock Pro", "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif; 
     font-size: 1.5em;
     font-weight: normal;
-    letter-spacing: -1pt;
 }
 
 .hidden
@@ -110,7 +107,6 @@ img.right
 
 label
 {
-    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
     font-weight: normal;
 }
 
