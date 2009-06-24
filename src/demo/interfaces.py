@@ -47,7 +47,14 @@ class ISession(zope.interface.Interface):
     """Sessions allow associating information with individual visitors."""
 
     id      = zope.interface.Attribute("Unique session id")
+    data    = zope.interface.Attribute("Property to access session data")
     expires = zope.interface.Attribute("Expiration time")
+
+    def setData(d):
+        """Sets session data."""
+
+    def getData():
+        """Returns session data."""
 
     def refresh():
         """Refresh the session."""

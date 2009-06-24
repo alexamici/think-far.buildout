@@ -99,11 +99,16 @@ def test_session_manager_with_wrong_response():
 def test_sessions():
     """Testing sessions"""
 
+    # Get the session manager.
     site_manager    = demo.app.globalSiteManager()
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
+    # Create a session.
     nose.tools.assert_equal(session_manager.sessions, {})
-
     app.get('/')
-
     assert len(session_manager.sessions) == 1
+
+    # Add data to a session object.
+    session = session_manager.sessions[session_manager.sessions.keys()[0]]
+    session.data = "foo"
+    nose.tools.assert_equal(session.data, "foo")

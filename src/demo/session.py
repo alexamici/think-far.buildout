@@ -37,11 +37,22 @@ class Session(object):
 
     def __init__(self, id):
         self.id      = id
+        self._data   = None
         self.expires = None
         self.refresh()
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
+
+    def setData(self, d):
+        self._data = d
+
+    def getData(self):
+        return self._data
+
+    data = property(fset=setData,
+                    fget=getData,
+                    doc="Property to access session data")
 
     def refresh(self):
         self.expires = time.time() + SESSION_LIFETIME
@@ -52,13 +63,19 @@ class SessionManager(object):
 
     zope.interface.implements(interfaces.ISessionManager)
 
-    def __init__(self, name, dictionary=None):
+    def __init__(self, name, session_class=Session, dictionary=None):
         self.__name__     = name
         self.cookie_name  = name + '_session'
+
+        if not interfaces.ISession.implementedBy(session_class):
+            raise TypeError, "The session class must implement ISession"
+        self.session_cls  = session_class
+
         if dictionary:
             self.sessions = dictionary
         else:
             self.sessions = {}
+
         self.lock         = threading.Lock()
         self.last_updated = time.time()
         logging.info("Creating session manager")
@@ -109,7 +126,7 @@ class SessionManager(object):
             response.headers.add_header('Set-Cookie', str(h))
 
             # Create session object.
-            session = Session(sid)
+            session = self.session_cls(sid)
             self.sessions[sid] = session
 
         return session
