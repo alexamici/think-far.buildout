@@ -20,6 +20,18 @@ Then access the application using a web browser with the following URL::
   http://localhost:8080/
 
 
+Uploading and managing
+----------------------
+
+To upload application files, run::
+
+  $ ./bin/appcfg update parts/demo
+
+For a more detailed documentation follow this url::
+
+  http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
+
+
 Testing
 -------
 
