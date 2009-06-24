@@ -56,7 +56,7 @@ def test_post():
 
     app.post('/', {'content':'foobar'})
     response = app.get('/')
-    assert '<b>foo@bar.net</b> wrote:<div>foobar' in response.body
+    assert '<p><b>foo@bar.net</b> wrote:<br />foobar</p>\n' in response.body
 
 
 @nose.tools.with_setup(setup_func, teardown_func)
