@@ -64,13 +64,15 @@ class GreetingsView(object):
         self.request = request
 
     def render(self):
-        output = ""
+        output = ['<p>']
         if self.context.author:
-            output += '<b>%s</b> wrote:' % self.context.author.nickname()
+            output.append('<b>%s</b> wrote:' % self.context.author.nickname())
         else:
-            output += 'An anonymous person wrote:'
-        output += '<div>%s</div>' % cgi.escape(self.context.content)
-        return output
+            output.append('An anonymous person wrote:')
+        output.append('<br />')
+        output.append(cgi.escape(self.context.content))
+        output.append('</p>')
+        return ''.join(output)
 
 
 class MainPage(object):
@@ -96,7 +98,7 @@ class MainPage(object):
                                                   interfaces.IGreetingsView)
             output.append(view.render())
 
-        return u''.join(output)
+        return ''.join(output)
 
     def status(self):
         """Returns a status message by parsing the query string."""

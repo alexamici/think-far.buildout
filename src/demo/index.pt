@@ -81,6 +81,7 @@
           <textarea name="content" class="span-6 comments"></textarea>
           <input type="submit" value="Submit">
         </form>
+        <br />
         <div tal:replace="structure view/greetings" />
       </div>
       <div class="span-24" align="right">
