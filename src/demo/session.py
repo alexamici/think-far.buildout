@@ -37,7 +37,6 @@ class Session(object):
 
     def __init__(self):
         self.id      = None
-        self.data   = None
         self.expires = None
         self.refresh()
 

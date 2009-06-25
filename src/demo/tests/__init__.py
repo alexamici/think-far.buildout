@@ -106,8 +106,3 @@ def test_sessions():
     # Create a session.
     app.get('/')
     assert len(session_manager.sessions) == 1
-
-    # Add data to a session object.
-    session = session_manager.sessions[session_manager.sessions.keys()[0]]
-    session.data = "foo"
-    nose.tools.assert_equal(session.data, "foo")
