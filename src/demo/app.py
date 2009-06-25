@@ -94,9 +94,6 @@ class SessionDict(object):
         except google.appengine.ext.db.BadQueryError:
             raise KeyError
 
-        if not result:
-            raise KeyError
-
         try:
             return result[0]
         except IndexError:
