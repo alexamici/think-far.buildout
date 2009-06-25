@@ -77,9 +77,6 @@ class SessionDict(object):
         for s in google.appengine.ext.db.GqlQuery("SELECT * FROM Session"):
             yield s.id
 
-    def __repr__(self):
-        return '{%s}' % ''.join(["'%s': %s" % (s, self[s]) for s in self])
-
     def __len__(self):
         return len([s for s in self])
 

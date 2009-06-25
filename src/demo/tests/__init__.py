@@ -19,6 +19,7 @@ import demo.interfaces
 import demo.session
 import nose.tools
 import os
+import time
 import urllib
 import webtest
 import zope.component
@@ -76,6 +77,25 @@ def test_session_manager():
     assert repr(session_manager) == "SessionManager(test)"
 
 
+def test_session_manager_with_session():
+    """Testing simple non-persistent sessions"""
+
+    session = demo.session.Session()
+    session.id = 'mesession'
+    session.expires = time.time()
+    assert repr(session) == "Session(id='mesession')"
+    sm = demo.session.SessionManager('test', dictionary=dict(mesession=session))
+    sm.purgeExpiredSessions()
+    assert len(sm.sessions) == 0
+
+
+@nose.tools.raises(TypeError)
+def test_session_manager_with_wrong_session_class():
+    """Testing session manager with wrong session class"""
+
+    session_manager = demo.session.SessionManager('test', session_class=type)
+
+
 @nose.tools.raises(TypeError)
 def test_session_manager_with_wrong_request():
     """Testing session manager with wrong request"""
@@ -96,8 +116,8 @@ def test_session_manager_with_wrong_response():
 
 
 @nose.tools.with_setup(setup_func, teardown_func)
-def test_sessions():
-    """Testing sessions"""
+def test_persistent_sessions():
+    """Testing persistent sessions"""
 
     # Get the session manager.
     site_manager    = demo.app.globalSiteManager()
