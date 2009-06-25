@@ -81,7 +81,7 @@ def test_session_manager_with_wrong_request():
     """Testing session manager with wrong request"""
 
     session_manager = demo.session.SessionManager('test')
-    session_manager.get_session(object(), object())
+    session_manager.getSession(object(), object())
 
 
 @nose.tools.raises(TypeError)
@@ -92,7 +92,7 @@ def test_session_manager_with_wrong_response():
     class DummyRequest:
         zope.interface.implements(demo.interfaces.IRequest)
     request = DummyRequest()
-    session_manager.get_session(request, object())
+    session_manager.getSession(request, object())
 
 
 @nose.tools.with_setup(setup_func, teardown_func)

@@ -48,7 +48,24 @@ class Session(object):
 
 
 class SessionManager(object):
-    """The global session manager."""
+    """The global session manager.
+
+    An instance of this class should be installed as a global utility. The
+    constructor takes a number of arguments:
+
+    name (required)
+    Name of the session manager utility
+
+    session_class (default=Session)
+    Use this class to instantiate session objects
+
+    dictionary (default=None)
+    A dictionary-like objects which represents the storage layer for our
+    sessions
+
+    The session manager can use a custom session class to instantiate session
+    objects as long as the supplied class provides the ISession interface.
+    """
 
     zope.interface.implements(interfaces.ISessionManager)
 
@@ -71,17 +88,16 @@ class SessionManager(object):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.__name__)
 
-    def purge_sessions(self):
+    def purgeExpiredSessions(self):
         with self.lock:
-            now = time.time()
             expired_sessions = []
             for s in self.sessions:
-                if now > self.sessions[s].expires:
+                if time.time() > self.sessions[s].expires:
                     expired_sessions.insert(0, s)
             while expired_sessions:
                 del self.sessions[expired_sessions.pop()]
 
-    def get_session(self, request, response):
+    def getSession(self, request, response):
         if not interfaces.IRequest.providedBy(request):
             raise TypeError, "%s must implement IRequest" % request
         if not interfaces.IResponse.providedBy(response):

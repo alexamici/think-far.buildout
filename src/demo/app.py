@@ -203,9 +203,9 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
             # Remove expired sessions. This should be done by a background
             # process. See the documentation for tasks and queues.
-            sm.purge_sessions()
+            sm.purgeExpiredSessions()
             # Get a session.
-            session = sm.get_session(self.request, self.response)
+            session = sm.getSession(self.request, self.response)
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the response object.

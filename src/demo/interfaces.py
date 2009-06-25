@@ -47,7 +47,8 @@ class ISession(zope.interface.Interface):
     """Sessions allow associating information with individual visitors."""
 
     id      = zope.interface.Attribute("Unique session id")
-    expires = zope.interface.Attribute("Expiration time as float")
+    expires = zope.interface.Attribute("Expiration time as floating point "
+                                       "number since the epoch (UTC)")
 
     def refresh():
         """Refresh the session."""
@@ -56,8 +57,8 @@ class ISession(zope.interface.Interface):
 class ISessionManager(zope.interface.Interface):
     """Interface for the global session manager."""
 
-    def purge_sessions():
+    def purgeExpiredSessions():
         """Deletes expired sessions."""
 
-    def get_session(request, response):
-        """Returns a session object."""
+    def getSession(request, response):
+        """Returns an active or newly created session."""
