@@ -29,7 +29,7 @@ class IGreeting(zope.interface.Interface):
     """Marker interface for greetings."""
 
 
-class IGreetingsView(zope.interface.Interface):
+class IGreetingView(zope.interface.Interface):
     """Views for greetings should implement this interface."""
 
     def render():

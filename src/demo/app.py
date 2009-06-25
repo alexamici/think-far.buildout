@@ -52,13 +52,10 @@ class Greeting(google.appengine.ext.db.Model):
     date    = google.appengine.ext.db.DateTimeProperty(auto_now_add=True)
 
 
-class GreetingsView(object):
-    """View for greetings.
+class GreetingView(object):
+    """View for greetings."""
 
-    This adapter is a view for greeting objects.
-    """
-
-    zope.interface.implements(interfaces.IGreetingsView)
+    zope.interface.implements(interfaces.IGreetingView)
 
     def __init__(self, context, request):
         self.context = context
@@ -99,7 +96,7 @@ class MainPage(object):
 
         for greeting in greetings:
             view = zope.component.getMultiAdapter((greeting, self.request),
-                                                  interfaces.IGreetingsView)
+                                                  interfaces.IGreetingView)
             output.append(view.render())
 
         return u''.join(output)
@@ -196,9 +193,9 @@ def initGlobalSiteManager():
         _global_site_manager = zope.component.getGlobalSiteManager()
 
         # Now we register an adapter.
-        _global_site_manager.registerAdapter(GreetingsView,
+        _global_site_manager.registerAdapter(GreetingView,
                                 (interfaces.IGreeting, interfaces.IRequest),
-                                interfaces.IGreetingsView)
+                                interfaces.IGreetingView)
 
         # We need a global utility for managing sessions.
         _global_site_manager.registerUtility(session.SessionManager('demo'))
