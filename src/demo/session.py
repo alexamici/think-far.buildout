@@ -17,6 +17,7 @@
 from __future__ import with_statement
 
 import Cookie
+import UserDict
 import hashlib
 import interfaces
 import logging
@@ -47,6 +48,20 @@ class Session(object):
         self.expires = time.time() + 300
 
 
+class SessionStorage(UserDict.IterableUserDict):
+    """Simple session storage implementation."""
+
+    zope.interface.implements(interfaces.ISessionStorage)
+
+    def purgeExpired(self):
+        expired = []
+        for s in self:
+            if time.time() > self[s].expires:
+                expired.insert(0, s)
+        while expired:
+            del self[expired.pop()]
+
+
 class SessionManager(object):
     """The global session manager.
 
@@ -59,7 +74,7 @@ class SessionManager(object):
     session_class (default=Session)
     Use this class to instantiate session objects
 
-    dictionary (default=None)
+    storage (default=None)
     Store sessions into this dictionary-like object
 
     The session manager can use a custom session class to instantiate session
@@ -68,7 +83,7 @@ class SessionManager(object):
 
     zope.interface.implements(interfaces.ISessionManager)
 
-    def __init__(self, name, session_class=Session, dictionary=None):
+    def __init__(self, name, session_class=Session, storage=None):
         self.__name__     = name
         self.cookie_name  = name + '_session'
 
@@ -76,10 +91,10 @@ class SessionManager(object):
             raise TypeError, "The session class must implement ISession"
         self.session_cls  = session_class
 
-        if dictionary:
-            self.sessions = dictionary
+        if storage:
+            self.sessions = storage
         else:
-            self.sessions = {}
+            self.sessions = SessionStorage()
 
         self.lock         = threading.Lock()
         logging.info("Creating session manager")
@@ -89,12 +104,7 @@ class SessionManager(object):
 
     def purgeExpiredSessions(self):
         with self.lock:
-            expired_sessions = []
-            for s in self.sessions:
-                if time.time() > self.sessions[s].expires:
-                    expired_sessions.insert(0, s)
-            while expired_sessions:
-                del self.sessions[expired_sessions.pop()]
+            self.sessions.purgeExpired()
 
     def getSession(self, request, response):
         if not interfaces.IRequest.providedBy(request):

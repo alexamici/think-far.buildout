@@ -70,8 +70,10 @@ class Session(google.appengine.ext.db.Model):
         self.put()
 
 
-class SessionDict(object):
+class SessionStorage(object):
     """Dictionary-like implementation for querying sessions."""
+
+    zope.interface.implements(interfaces.ISessionStorage)
 
     def __iter__(self):
         for s in google.appengine.ext.db.GqlQuery("SELECT * FROM Session"):
@@ -103,14 +105,22 @@ class SessionDict(object):
         else:
             raise KeyError
 
-    def keys(self):
-        return list(self)
-
     def get(self, key, default=None):
         try:
             return self[key]
         except KeyError:
             return default
+
+    def keys(self):
+        return list(self)
+
+    def purgeExpired(self):
+        now = time.time()
+        expired = google.appengine.ext.db.GqlQuery("SELECT * FROM Session "
+                                                   "WHERE expires < %f" % now)
+        for s in expired:
+            s.delete()
+
 
 
 class GreetingView(object):
@@ -263,7 +273,7 @@ def initGlobalSiteManager():
                                 interfaces.IGreetingView)
 
         # We need a global utility for managing sessions.
-        sm = session.SessionManager('demo', Session, SessionDict())
+        sm = session.SessionManager('demo', Session, SessionStorage())
         _global_site_manager.registerUtility(sm)
 
 

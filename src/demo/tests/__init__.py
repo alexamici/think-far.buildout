@@ -80,11 +80,26 @@ def test_session_manager():
 def test_session_manager_with_session():
     """Testing simple non-persistent sessions"""
 
+    # Create a session which expires right after creation.
     session = demo.session.Session()
     session.id = 'mesession'
     session.expires = time.time()
     assert repr(session) == "Session(id='mesession')"
-    sm = demo.session.SessionManager('test', dictionary=dict(mesession=session))
+
+    # Create a session storage to store our session.
+    storage = demo.session.SessionStorage()
+    storage['mesession'] = session
+    assert len(storage) == 1
+
+    # Purge expired sessions.
+    storage.purgeExpired()
+
+    # Store our session again.
+    storage['mesession'] = session
+    assert len(storage) == 1
+
+    # Check the session manager api.
+    sm = demo.session.SessionManager('test', storage=storage)
     sm.purgeExpiredSessions()
     assert len(sm.sessions) == 0
 

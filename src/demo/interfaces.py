@@ -54,6 +54,20 @@ class ISession(zope.interface.Interface):
         """Refresh the session."""
 
 
+class ISessionStorage(zope.interface.Interface):
+    """Sessions are stored in a session storage.
+
+    The session storage has a dictionary-like interface with some additions for
+    purging expired sessions.
+    """
+
+    def get(id, default=None):
+        """Returns session with given id or default."""
+
+    def purgeExpired(self):
+        """Deletes expired sessions."""
+
+
 class ISessionManager(zope.interface.Interface):
     """Interface for the global session manager."""
 
