@@ -35,6 +35,7 @@ import zope.interface
 _global_site_manager = None  # The global site manager for registering adapters
                              # and utilities.
 
+
 def globalSiteManager():
     """Returns global site manager."""
 
@@ -72,13 +73,16 @@ class GreetingsView(object):
         output.append('<br />')
         output.append(cgi.escape(self.context.content))
         output.append('</p>')
-        return ''.join(output)
+        return u''.join(output)
 
 
 class MainPage(object):
     """Implementation for the main page."""
 
     zope.interface.implements(interfaces.IPage)
+
+    template = pagetemplate.PageTemplate(
+                    os.path.join(os.path.split(__file__)[0], 'index.pt'))
 
     def __init__(self, context, request):
         self.context = context
@@ -88,8 +92,8 @@ class MainPage(object):
         """Returns rendered greetings."""
 
         greetings = google.appengine.ext.db.GqlQuery(
-                                                "SELECT * FROM Greeting "
-                                                "ORDER BY date DESC LIMIT 10")
+                                "SELECT * FROM Greeting "
+                                "ORDER BY date DESC LIMIT 10")
 
         output = []
 
@@ -98,7 +102,7 @@ class MainPage(object):
                                                   interfaces.IGreetingsView)
             output.append(view.render())
 
-        return ''.join(output)
+        return u''.join(output)
 
     def status(self):
         """Returns a status message by parsing the query string."""
@@ -108,10 +112,9 @@ class MainPage(object):
     def render(self):
         """Writes rendered output to the response object."""
 
-        template = pagetemplate.PageTemplate(
-                        os.path.join(os.path.split(__file__)[0], 'index.pt'))
-
-        return template(view=self, context=self.context, request=self.request)
+        return self.template(view=self,
+                             context=self.context,
+                             request=self.request)
 
 
 class Context(object):
