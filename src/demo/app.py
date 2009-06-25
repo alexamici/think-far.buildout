@@ -122,7 +122,6 @@ class SessionStorage(object):
             s.delete()
 
 
-
 class GreetingView(object):
     """View for greetings."""
 
