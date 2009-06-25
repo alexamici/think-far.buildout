@@ -92,6 +92,8 @@ class SessionManager(object):
         self.session_cls  = session_class
 
         if storage:
+            if not interfaces.ISessionStorage.providedBy(storage):
+                raise TypeError, "The storage must provide ISessionStorage"
             self.sessions = storage
         else:
             self.sessions = SessionStorage()

@@ -105,6 +105,13 @@ def test_session_manager_with_session():
 
 
 @nose.tools.raises(TypeError)
+def test_session_manager_with_wrong_storage():
+    """Testing session manager with wrong storage"""
+
+    demo.session.SessionManager('test', storage=type)
+
+
+@nose.tools.raises(TypeError)
 def test_session_manager_with_wrong_session_class():
     """Testing session manager with wrong session class"""
 
