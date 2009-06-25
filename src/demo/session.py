@@ -60,8 +60,7 @@ class SessionManager(object):
     Use this class to instantiate session objects
 
     dictionary (default=None)
-    A dictionary-like objects which represents the storage layer for our
-    sessions
+    Store sessions into this dictionary-like object
 
     The session manager can use a custom session class to instantiate session
     objects as long as the supplied class provides the ISession interface.
