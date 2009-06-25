@@ -26,36 +26,26 @@ import threading
 import time
 import zope.interface
 
-SESSION_LIFETIME = 600  # 10 minutes
-UPDATE_PERIOD    = 120  # 2 minutes
-
 
 class Session(object):
-    """Sessions allow associating information with individual visitors."""
+    """Sessions allow associating information with individual visitors.
+
+    This is a sample non-persistent implementation.
+    """
 
     zope.interface.implements(interfaces.ISession)
 
-    def __init__(self, id):
-        self.id      = id
-        self._data   = None
+    def __init__(self):
+        self.id      = None
+        self.data   = None
         self.expires = None
         self.refresh()
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
 
-    def setData(self, d):
-        self._data = d
-
-    def getData(self):
-        return self._data
-
-    data = property(fset=setData,
-                    fget=getData,
-                    doc="Property to access session data")
-
     def refresh(self):
-        self.expires = time.time() + SESSION_LIFETIME
+        self.expires = time.time() + 300
 
 
 class SessionManager(object):
@@ -77,7 +67,6 @@ class SessionManager(object):
             self.sessions = {}
 
         self.lock         = threading.Lock()
-        self.last_updated = time.time()
         logging.info("Creating session manager")
 
     def __repr__(self):
@@ -86,14 +75,12 @@ class SessionManager(object):
     def purge_sessions(self):
         with self.lock:
             now = time.time()
-            if (now - self.last_updated) > UPDATE_PERIOD:
-                expired_sessions = []
-                for s in self.sessions:
-                    if now > self.sessions[s].expires:
-                        expired_sessions.insert(0, s)
-                while expired_sessions:
-                    del self.sessions[expired_sessions.pop()]
-                self.last_updated = now
+            expired_sessions = []
+            for s in self.sessions:
+                if now > self.sessions[s].expires:
+                    expired_sessions.insert(0, s)
+            while expired_sessions:
+                del self.sessions[expired_sessions.pop()]
 
     def get_session(self, request, response):
         if not interfaces.IRequest.providedBy(request):
@@ -105,15 +92,10 @@ class SessionManager(object):
         sid = request.cookies.get(self.cookie_name)
         session = None
 
-        # Remove expired sessions.
-        self.purge_sessions()
-
         if sid:
             session = self.sessions.get(sid)
 
-        if session:
-            session.refresh()
-        else:
+        if not session:
             # We need a new session id.
             m = hashlib.md5()
             m.update(str(time.time()+random.random()))
@@ -126,7 +108,10 @@ class SessionManager(object):
             response.headers.add_header('Set-Cookie', str(h))
 
             # Create session object.
-            session = self.session_cls(sid)
+            session = self.session_cls()
+            session.id = sid
             self.sessions[sid] = session
+
+        session.refresh()
 
         return session

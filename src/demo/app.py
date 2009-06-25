@@ -26,6 +26,7 @@ import logging
 import os
 import pagetemplate
 import session
+import time
 import urllib
 import wsgiref.handlers
 import zope.component
@@ -50,6 +51,72 @@ class Greeting(google.appengine.ext.db.Model):
     author  = google.appengine.ext.db.UserProperty()
     content = google.appengine.ext.db.StringProperty(multiline=True)
     date    = google.appengine.ext.db.DateTimeProperty(auto_now_add=True)
+
+
+class Session(google.appengine.ext.db.Model):
+    """Persistent session implementation."""
+
+    zope.interface.implements(interfaces.ISession)
+
+    id      = google.appengine.ext.db.StringProperty()
+    data    = google.appengine.ext.db.ByteStringProperty()
+    expires = google.appengine.ext.db.FloatProperty()
+
+    def __repr__(self):
+        return "Session(id='%s')" % self.id
+
+    def refresh(self):
+        self.expires = time.time() + 300
+        self.put()
+
+
+class SessionDict(object):
+    """Dictionary-like implementation for querying sessions."""
+
+    def __iter__(self):
+        for s in google.appengine.ext.db.GqlQuery("SELECT * FROM Session"):
+            yield s.id
+
+    def __repr__(self):
+        return '{%s}' % ''.join(["'%s': %s" % (s, self[s]) for s in self])
+
+    def __len__(self):
+        return len([s for s in self])
+
+    def __setitem__(self, key, value):
+        pass
+
+    def __getitem__(self, key):
+        try:
+            result = google.appengine.ext.db.GqlQuery("SELECT * FROM Session "
+                                                      "WHERE id = '%s'"
+                                                      "LIMIT 1" % key)
+        except google.appengine.ext.db.BadQueryError:
+            raise KeyError
+
+        if not result:
+            raise KeyError
+
+        try:
+            return result[0]
+        except IndexError:
+            raise KeyError
+
+    def __delitem__(self, key):
+        session = self.get(key)
+        if session:
+            session.delete()
+        else:
+            raise KeyError
+
+    def keys(self):
+        return list(self)
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
 
 class GreetingView(object):
@@ -137,6 +204,10 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         # Lookup our session manager.
         if _global_site_manager:
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
+            # Remove expired sessions. This should be done by a background
+            # process. See the documentation for tasks and queues.
+            sm.purge_sessions()
+            # Get a session.
             session = sm.get_session(self.request, self.response)
 
         # The MainPage adapter takes a context and the request object. We write
@@ -198,7 +269,8 @@ def initGlobalSiteManager():
                                 interfaces.IGreetingView)
 
         # We need a global utility for managing sessions.
-        _global_site_manager.registerUtility(session.SessionManager('demo'))
+        sm = session.SessionManager('demo', Session, SessionDict())
+        _global_site_manager.registerUtility(sm)
 
 
 def main():

@@ -104,7 +104,6 @@ def test_sessions():
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
     # Create a session.
-    nose.tools.assert_equal(session_manager.sessions, {})
     app.get('/')
     assert len(session_manager.sessions) == 1
 
