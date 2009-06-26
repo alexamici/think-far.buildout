@@ -37,7 +37,7 @@ _global_site_manager = None  # The global site manager for registering adapters
                              # and utilities.
 
 
-def globalSiteManager():
+def getGlobalSiteManager():
     """Returns global site manager."""
 
     return _global_site_manager

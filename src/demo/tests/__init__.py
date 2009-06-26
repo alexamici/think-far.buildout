@@ -42,8 +42,12 @@ def teardown_func():
     """Tear down test fixtures."""
 
     demo.app._global_site_manager = None
+    sessions = demo.app.SessionProvider()
+    for s in sessions:
+        del sessions[s]
 
 
+@nose.tools.with_setup(setup_func, teardown_func)
 def test_index():
     """Testing whether our application responds"""
 
@@ -68,6 +72,29 @@ def test_post_empty():
     nose.tools.assert_equal('http://localhost/?status=%s' % 
                             urllib.quote('Enter some text!'),
                             response.location)
+
+
+def test_session_provider():
+    """Testing session provider"""
+
+    # Create a session provider.
+    sessions = demo.app.SessionProvider()
+    nose.tools.assert_equal(len(sessions), 0)
+
+    # Create a session.
+    session = demo.app.Session()
+    session.id = 'mesession'
+    session.put()
+    nose.tools.assert_equal(len(sessions), 1)
+    nose.tools.assert_equal(sessions.keys(), ['mesession'])
+
+
+@nose.tools.raises(KeyError)
+def test_session_provider_key_error():
+    """Testing session provider exception"""
+
+    sessions = demo.app.SessionProvider()
+    del sessions['unknown']
 
 
 def test_session_manager():
@@ -115,7 +142,7 @@ def test_session_manager_with_wrong_provider():
 def test_session_manager_with_wrong_session_class():
     """Testing session manager with wrong session class"""
 
-    session_manager = demo.session.SessionManager('test', session_class=type)
+    demo.session.SessionManager('test', session_class=type)
 
 
 @nose.tools.raises(TypeError)
@@ -142,7 +169,7 @@ def test_persistent_sessions():
     """Testing persistent sessions"""
 
     # Get the session manager.
-    site_manager    = demo.app.globalSiteManager()
+    site_manager    = demo.app.getGlobalSiteManager()
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
     # Create a session.
