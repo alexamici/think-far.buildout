@@ -70,10 +70,10 @@ class Session(google.appengine.ext.db.Model):
         self.put()
 
 
-class SessionRetrieval(object):
+class SessionProvider(object):
     """Dictionary-like implementation for querying sessions."""
 
-    zope.interface.implements(interfaces.ISessionRetrieval)
+    zope.interface.implements(interfaces.ISessionProvider)
 
     def __iter__(self):
         for s in google.appengine.ext.db.GqlQuery("SELECT * FROM Session"):
@@ -272,7 +272,7 @@ def initGlobalSiteManager():
                                 interfaces.IGreetingView)
 
         # We need a global utility for managing sessions.
-        sm = session.SessionManager('demo', Session, SessionRetrieval())
+        sm = session.SessionManager('demo', Session, SessionProvider())
         _global_site_manager.registerUtility(sm)
 
 

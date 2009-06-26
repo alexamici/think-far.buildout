@@ -86,8 +86,8 @@ def test_session_manager_with_session():
     session.expires = time.time()
     assert repr(session) == "Session(id='mesession')"
 
-    # Create a session retrieval to store our session.
-    sessions = demo.session.SessionRetrieval()
+    # Create a session provider to store our session.
+    sessions = demo.session.SessionProvider()
     sessions['mesession'] = session
     assert len(sessions) == 1
 
@@ -99,16 +99,16 @@ def test_session_manager_with_session():
     assert len(sessions) == 1
 
     # Check the session manager api.
-    sm = demo.session.SessionManager('test', retrieval=sessions)
+    sm = demo.session.SessionManager('test', provider=sessions)
     sm.purgeExpiredSessions()
     assert len(sm.sessions) == 0
 
 
 @nose.tools.raises(TypeError)
-def test_session_manager_with_wrong_storage():
-    """Testing session manager with wrong storage"""
+def test_session_manager_with_wrong_provider():
+    """Testing session manager with a provider of wrong type"""
 
-    demo.session.SessionManager('test', storage=type)
+    demo.session.SessionManager('test', provider=type)
 
 
 @nose.tools.raises(TypeError)

@@ -54,10 +54,10 @@ class ISession(zope.interface.Interface):
         """Refresh the session."""
 
 
-class ISessionRetrieval(zope.interface.Interface):
+class ISessionProvider(zope.interface.Interface):
     """Interface for querying and storing sessions.
 
-    The session retrieval has a dictionary-like interface with some additions
+    The session provider has a dictionary-like interface with some additions
     for purging expired sessions.
     """
 
