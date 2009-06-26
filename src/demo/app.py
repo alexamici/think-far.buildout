@@ -263,7 +263,7 @@ def initGlobalSiteManager():
     global _global_site_manager
 
     if _global_site_manager is None:
-        logging.info("Creating global site manager")
+        logging.debug("Creating global site manager")
         _global_site_manager = zope.component.getGlobalSiteManager()
 
         # Now we register an adapter.

@@ -20,7 +20,6 @@ import Cookie
 import UserDict
 import hashlib
 import interfaces
-import logging
 import random
 import re
 import threading
@@ -99,7 +98,6 @@ class SessionManager(object):
             self.sessions = SessionStorage()
 
         self.lock         = threading.Lock()
-        logging.info("Creating session manager")
 
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.__name__)
