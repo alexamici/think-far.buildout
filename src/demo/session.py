@@ -108,9 +108,9 @@ class SessionManager(object):
 
     def getSession(self, request, response):
         if not interfaces.IRequest.providedBy(request):
-            raise TypeError, "%s must implement IRequest" % request
+            raise TypeError, "%s must provide IRequest" % request
         if not interfaces.IResponse.providedBy(response):
-            raise TypeError, "%s must implement IResponse" % response
+            raise TypeError, "%s must provide IResponse" % response
 
         # Try to obtain a session id from a cookie.
         sid = request.cookies.get(self.cookie_name)
