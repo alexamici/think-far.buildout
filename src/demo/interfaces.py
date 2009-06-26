@@ -54,11 +54,11 @@ class ISession(zope.interface.Interface):
         """Refresh the session."""
 
 
-class ISessionStorage(zope.interface.Interface):
-    """Sessions are stored in a session storage.
+class ISessionRetrieval(zope.interface.Interface):
+    """Interface for querying and storing sessions.
 
-    The session storage has a dictionary-like interface with some additions for
-    purging expired sessions.
+    The session retrieval has a dictionary-like interface with some additions
+    for purging expired sessions.
     """
 
     def get(id, default=None):

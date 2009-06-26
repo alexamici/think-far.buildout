@@ -86,20 +86,20 @@ def test_session_manager_with_session():
     session.expires = time.time()
     assert repr(session) == "Session(id='mesession')"
 
-    # Create a session storage to store our session.
-    storage = demo.session.SessionStorage()
-    storage['mesession'] = session
-    assert len(storage) == 1
+    # Create a session retrieval to store our session.
+    sessions = demo.session.SessionRetrieval()
+    sessions['mesession'] = session
+    assert len(sessions) == 1
 
     # Purge expired sessions.
-    storage.purgeExpired()
+    sessions.purgeExpired()
 
     # Store our session again.
-    storage['mesession'] = session
-    assert len(storage) == 1
+    sessions['mesession'] = session
+    assert len(sessions) == 1
 
     # Check the session manager api.
-    sm = demo.session.SessionManager('test', storage=storage)
+    sm = demo.session.SessionManager('test', retrieval=sessions)
     sm.purgeExpiredSessions()
     assert len(sm.sessions) == 0
 

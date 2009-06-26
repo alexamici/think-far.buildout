@@ -47,10 +47,10 @@ class Session(object):
         self.expires = time.time() + 300
 
 
-class SessionStorage(UserDict.IterableUserDict):
-    """Simple session storage implementation."""
+class SessionRetrieval(UserDict.IterableUserDict):
+    """Simple session retrieval implementation."""
 
-    zope.interface.implements(interfaces.ISessionStorage)
+    zope.interface.implements(interfaces.ISessionRetrieval)
 
     def purgeExpired(self):
         expired = []
@@ -73,8 +73,8 @@ class SessionManager(object):
     session_class (default=Session)
     Use this class to instantiate session objects
 
-    storage (default=None)
-    Store sessions into this dictionary-like object
+    retrieval (default=None)
+    Use this dictionary-like retrieval to store and query sessions
 
     The session manager can use a custom session class to instantiate session
     objects as long as the supplied class provides the ISession interface.
@@ -82,7 +82,7 @@ class SessionManager(object):
 
     zope.interface.implements(interfaces.ISessionManager)
 
-    def __init__(self, name, session_class=Session, storage=None):
+    def __init__(self, name, session_class=Session, retrieval=None):
         self.__name__     = name
         self.cookie_name  = name + '_session'
 
@@ -90,12 +90,12 @@ class SessionManager(object):
             raise TypeError, "The session class must implement ISession"
         self.session_cls  = session_class
 
-        if storage:
-            if not interfaces.ISessionStorage.providedBy(storage):
-                raise TypeError, "The storage must provide ISessionStorage"
-            self.sessions = storage
+        if retrieval:
+            if not interfaces.ISessionRetrieval.providedBy(retrieval):
+                raise TypeError, "The retrieval must provide ISessionRetrieval"
+            self.sessions = retrieval
         else:
-            self.sessions = SessionStorage()
+            self.sessions = SessionRetrieval()
 
         self.lock         = threading.Lock()
 
