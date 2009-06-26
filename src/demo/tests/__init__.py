@@ -175,3 +175,14 @@ def test_persistent_sessions():
     # Create a session.
     app.get('/')
     assert len(session_manager.sessions) == 1
+
+    # Create a session and set the expiration time to now.
+    session = demo.app.Session()
+    session.id = 'mesession'
+    session.expires = time.time()
+    session.put()
+    assert len(session_manager.sessions) == 2
+
+    # Purge expired sessions.
+    session_manager.purgeExpiredSessions()
+    assert len(session_manager.sessions) == 1
