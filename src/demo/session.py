@@ -53,10 +53,8 @@ class SessionProvider(UserDict.IterableUserDict):
     zope.interface.implements(interfaces.ISessionProvider)
 
     def purgeExpired(self):
-        expired = []
-        for s in self:
-            if time.time() > self[s].expires:
-                expired.insert(0, s)
+        now = time.time()
+        expired = [s for s in self if now > self[s].expires]
         while expired:
             del self[expired.pop()]
 
