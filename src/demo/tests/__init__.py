@@ -154,6 +154,7 @@ def test_persistent_sessions():
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
     # Create a session.
+    os.environ['HTTP_COOKIE']='demo_session=unknown'
     app.get('/')
     assert len(session_manager.sessions) == 1
 

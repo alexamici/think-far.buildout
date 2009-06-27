@@ -20,6 +20,7 @@ import Cookie
 import UserDict
 import hashlib
 import interfaces
+import os
 import random
 import re
 import threading
@@ -111,10 +112,10 @@ class SessionManager(object):
             raise TypeError, "%s must provide IResponse" % response
 
         # Try to obtain a session id from a cookie.
-        sid = request.cookies.get(self.cookie_name)
+        cookie = os.environ.get('HTTP_COOKIE')
         session = None
-
-        if sid:
+        if cookie:
+            sid = cookie[len(self.cookie_name)+1:]
             session = self.sessions.get(sid)
 
         if not session:
