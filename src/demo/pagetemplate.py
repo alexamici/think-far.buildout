@@ -14,6 +14,7 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Using zope page templates."""
 
+import os
 import zope.interface
 import zope.pagetemplate.pagetemplate
 
@@ -27,7 +28,7 @@ class PageTemplate(zope.pagetemplate.pagetemplate.PageTemplate):
     def __init__(self, pt):
         """Initialize page template."""
 
-        f = open(pt, 'r')
+        f = open(os.path.join(os.path.split(__file__)[0], pt), 'r')
         self.write(f.read())
         f.close()
 

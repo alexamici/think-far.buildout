@@ -25,24 +25,6 @@ class IResponse(zope.interface.Interface):
     """Marker interface for response objects."""
 
 
-class IGreeting(zope.interface.Interface):
-    """Marker interface for greetings."""
-
-
-class IGreetingView(zope.interface.Interface):
-    """Views for greetings should implement this interface."""
-
-    def render():
-        """Renders HTML output."""
-
-
-class IPage(zope.interface.Interface):
-    """Interface for pages."""
-
-    def render():
-        """Renders HTML output."""
-
-
 class ISession(zope.interface.Interface):
     """Sessions allow associating information with individual visitors."""
 
@@ -76,3 +58,21 @@ class ISessionManager(zope.interface.Interface):
 
     def getSession(request, response):
         """Returns an active or newly created session."""
+
+
+class ICounterView(zope.interface.Interface):
+    """Interface definition for the counter view."""
+
+    def render():
+        """Renders HTML output."""
+
+
+class IPage(zope.interface.Interface):
+    """Interface for pages."""
+
+    def render():
+        """Renders HTML output."""
+
+
+class IContext(zope.interface.Interface):
+    """Market interface for context objects."""

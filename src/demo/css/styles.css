@@ -105,12 +105,7 @@ img.right
     visibility: hidden;
 }
 
-label
+.counter
 {
-    font-weight: normal;
-}
-
-textarea.comments
-{
-    height: 40px;
+    font-size: 5.0em;
 }

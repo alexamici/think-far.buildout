@@ -23,7 +23,6 @@ import google.appengine.ext.db
 import google.appengine.ext.webapp
 import interfaces
 import logging
-import os
 import pagetemplate
 import session
 import time
@@ -43,24 +42,14 @@ def getGlobalSiteManager():
     return _global_site_manager
 
 
-class Greeting(google.appengine.ext.db.Model):
-    """Model declaration for greetings."""
-
-    zope.interface.implements(interfaces.IGreeting)
-
-    author  = google.appengine.ext.db.UserProperty()
-    content = google.appengine.ext.db.StringProperty(multiline=True)
-    date    = google.appengine.ext.db.DateTimeProperty(auto_now_add=True)
-
-
 class Session(google.appengine.ext.db.Model):
     """Persistent session implementation."""
 
     zope.interface.implements(interfaces.ISession)
 
     id      = google.appengine.ext.db.StringProperty()
-    data    = google.appengine.ext.db.ByteStringProperty()
     expires = google.appengine.ext.db.FloatProperty()
+    count   = google.appengine.ext.db.IntegerProperty()
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
@@ -122,25 +111,21 @@ class SessionProvider(object):
             s.delete()
 
 
-class GreetingView(object):
-    """View for greetings."""
+class CounterView(object):
+    """View for our counter."""
 
-    zope.interface.implements(interfaces.IGreetingView)
+    zope.interface.implements(interfaces.ICounterView)
+
+    template = pagetemplate.PageTemplate('counter.pt')
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def render(self):
-        output = ['<p>']
-        if self.context.author:
-            output.append('<b>%s</b> wrote:' % self.context.author.nickname())
-        else:
-            output.append('An anonymous person wrote:')
-        output.append('<br />')
-        output.append(cgi.escape(self.context.content))
-        output.append('</p>')
-        return u''.join(output)
+        return self.template(view=self,
+                             context=self.context,
+                             request=self.request)
 
 
 class MainPage(object):
@@ -148,33 +133,18 @@ class MainPage(object):
 
     zope.interface.implements(interfaces.IPage)
 
-    template = pagetemplate.PageTemplate(
-                    os.path.join(os.path.split(__file__)[0], 'index.pt'))
+    template = pagetemplate.PageTemplate('index.pt')
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
-    def greetings(self):
-        """Returns rendered greetings."""
+    def counter(self):
+        """Returns counter."""
 
-        greetings = google.appengine.ext.db.GqlQuery(
-                                "SELECT * FROM Greeting "
-                                "ORDER BY date DESC LIMIT 10")
-
-        output = []
-
-        for greeting in greetings:
-            view = zope.component.getMultiAdapter((greeting, self.request),
-                                                  interfaces.IGreetingView)
-            output.append(view.render())
-
-        return u''.join(output)
-
-    def status(self):
-        """Returns a status message by parsing the query string."""
-
-        return self.request.get(u'status')
+        view = zope.component.getMultiAdapter((self.context, self.request),
+                                              interfaces.ICounterView)
+        return view.render()
 
     def render(self):
         """Writes rendered output to the response object."""
@@ -186,6 +156,8 @@ class MainPage(object):
 
 class Context(object):
     """Provides a simple context object."""
+
+    zope.interface.implements(interfaces.IContext)
 
     def __init__(self, session):
         self.session = session
@@ -212,34 +184,17 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             sm.purgeExpiredSessions()
             # Get a session.
             session = sm.getSession(self.request, self.response)
+            # And increase the hit counter.
+            if session.count:
+                session.count += 1
+            else:
+                session.count = 1
+            session.refresh()
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the response object.
         page = MainPage(Context(session), self.request)
         self.response.out.write(page.render())
-
-    def post(self):
-        """Handles POST."""
-
-        # Get contents from the request.
-        content = self.request.get('content')
-
-        if content:
-            # So we create a greeting instance.
-            greeting = Greeting()
-
-            if google.appengine.api.users.get_current_user():
-                greeting.author = google.appengine.api.users.get_current_user()
-
-            greeting.content = content
-
-            # And put it to the db.
-            greeting.put()
-
-            self.redirect('/')
-            return
-
-        self.redirect('/?status=%s' % urllib.quote('Enter some text!'))
 
 
 def application():
@@ -267,9 +222,9 @@ def initGlobalSiteManager():
         _global_site_manager = zope.component.getGlobalSiteManager()
 
         # Now we register an adapter.
-        _global_site_manager.registerAdapter(GreetingView,
-                                (interfaces.IGreeting, interfaces.IRequest),
-                                interfaces.IGreetingView)
+        _global_site_manager.registerAdapter(CounterView,
+                                (interfaces.IContext, interfaces.IRequest),
+                                interfaces.ICounterView)
 
         # We need a global utility for managing sessions.
         sm = session.SessionManager('demo', Session, SessionProvider())

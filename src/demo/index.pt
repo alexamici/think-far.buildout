@@ -72,17 +72,7 @@
           <a href="http://muthukadan.net/docs/zca.html">Comprehensive Guide to
           the Zope Component Architecture</a>.
         </p>
-        <h3>What do <span class="emph">you</span> think?</h3>
-        <span class="emph"
-              tal:condition="view/status"
-              tal:content="view/status" />
-        <form id="comments" action="/" method="post">
-          <label for="content">Leave a comment if you like.</label>
-          <textarea name="content" class="span-6 comments"></textarea>
-          <input type="submit" value="Submit">
-        </form>
-        <br />
-        <div tal:replace="structure view/greetings" />
+        <div tal:replace="structure view/counter" />
       </div>
       <div class="span-24" align="right">
         <pre tal:content="context/session" />

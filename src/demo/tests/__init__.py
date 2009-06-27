@@ -30,7 +30,7 @@ app = webtest.TestApp(demo.app.application())
 def setup_func():
     """Set up test fixtures."""
 
-    # We need a global site manager to register our greetings view.
+    # We need a global site manager.
     demo.app.initGlobalSiteManager()
 
     # For some reason the test expects following environment variable
@@ -53,25 +53,6 @@ def test_index():
 
     response = app.get('/')
     nose.tools.assert_equal(response.status, '200 OK')
-
-
-@nose.tools.with_setup(setup_func, teardown_func)
-def test_post():
-    """Posting greeting"""
-
-    app.post('/', {'content':'foobar'})
-    response = app.get('/')
-    assert '<p><b>foo@bar.net</b> wrote:<br />foobar</p>\n' in response.body
-
-
-@nose.tools.with_setup(setup_func, teardown_func)
-def test_post_empty():
-    """Posting empty greeting"""
-
-    response = app.post('/')
-    nose.tools.assert_equal('http://localhost/?status=%s' % 
-                            urllib.quote('Enter some text!'),
-                            response.location)
 
 
 def test_session_provider():
