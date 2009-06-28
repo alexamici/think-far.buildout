@@ -27,8 +27,8 @@ setup (
     version='1.0.0',
     author="Tobias Rodaebel",
     author_email="tobias.rodaebel@googlemail.com",
-    description="Demonstrates how to use the Zope Toolkit within Google App "
-                "Engine.",
+    description="Demonstrates how to use the Zope Component Architecture "
+                "within Google App Engine.",
     long_description=(
         read('README.txt')
         + '\n\n' +
