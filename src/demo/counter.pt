@@ -1,0 +1,8 @@
+<h3>Counter <span class="emph">demo</span></h3>
+<p>
+  Reload the page to increase the counter value.
+</p>
+<br />
+<p>
+  <span class="counter" tal:content="context/session/count|nothing" /> hits.
+</p>
