@@ -72,9 +72,9 @@
           <a href="http://muthukadan.net/docs/zca.html">Comprehensive Guide to
           the Zope Component Architecture</a>.
         </p>
-        <div tal:replace="structure view/counter" />
+        <div id="counter" tal:content="structure view/counter" />
       </div>
-      <div class="span-24" align="right">
+      <div id="debug" class="span-24" align="right">
         <pre tal:content="context/session" />
       </div>
     </div>
