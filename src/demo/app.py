@@ -87,9 +87,9 @@ class SessionProvider(object):
             raise KeyError
 
     def __delitem__(self, key):
-        session = self.get(key)
-        if session:
-            session.delete()
+        s = self.get(key)
+        if s:
+            s.delete()
         else:
             raise KeyError
 
@@ -158,8 +158,8 @@ class Context(object):
 
     zope.interface.implements(interfaces.IContext)
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, s):
+        self.session = s
 
 
 class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
@@ -173,7 +173,7 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
         zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
-        session = None
+        current_session = None
 
         # Lookup our session manager.
         if _global_site_manager:
@@ -181,18 +181,18 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
             # Remove expired sessions. This should be done by a background
             # process. See the documentation for tasks and queues.
             sm.purgeExpiredSessions()
-            # Get a session.
-            session = sm.getSession(self.request, self.response)
+            # Get the current session.
+            current_session = sm.getSession(self.request, self.response)
             # And increase the hit counter.
-            if session.count:
-                session.count += 1
+            if current_session.count:
+                current_session.count += 1
             else:
-                session.count = 1
-            session.refresh()
+                current_session.count = 1
+            current_session.refresh()
 
         # The MainPage adapter takes a context and the request object. We write
         # its rendered output to the response object.
-        page = MainPage(Context(session), self.request)
+        page = MainPage(Context(current_session), self.request)
         self.response.out.write(page.render())
 
 
