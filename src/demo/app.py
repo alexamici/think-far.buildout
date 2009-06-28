@@ -26,7 +26,6 @@ import logging
 import pagetemplate
 import session
 import time
-import urllib
 import wsgiref.handlers
 import zope.component
 import zope.interface
