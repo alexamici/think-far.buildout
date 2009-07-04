@@ -19,6 +19,7 @@ sys.path.insert(0, 'packages.zip')
 
 import cgi
 import google.appengine.api
+import google.appengine.api.labs.taskqueue
 import google.appengine.ext.db
 import google.appengine.ext.webapp
 import interfaces
@@ -48,7 +49,7 @@ class Session(google.appengine.ext.db.Model):
 
     id      = google.appengine.ext.db.StringProperty()
     expires = google.appengine.ext.db.FloatProperty()
-    count   = google.appengine.ext.db.IntegerProperty()
+    count   = google.appengine.ext.db.IntegerProperty(indexed=False)
 
     def __repr__(self):
         return "Session(id='%s')" % self.id
@@ -104,8 +105,8 @@ class SessionProvider(object):
 
     def purgeExpired(self):
         now = time.time()
-        expired = google.appengine.ext.db.GqlQuery("SELECT * FROM Session "
-                                                   "WHERE expires < %f" % now)
+        expired = google.appengine.ext.db.GqlQuery(
+                        "SELECT * FROM Session WHERE expires < %f" % now)
         for s in expired:
             s.delete()
 
@@ -173,21 +174,23 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
         zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
+        # We have no current session at this point of time.
         current_session = None
+
+        # Add a session worker to the task queue which purges expired sessions.
+        google.appengine.api.labs.taskqueue.add(url='/purgesessions')
 
         # Lookup our session manager.
         if _global_site_manager:
             sm = _global_site_manager.getUtility(interfaces.ISessionManager)
-            # Remove expired sessions. This should be done by a background
-            # process. See the documentation for tasks and queues.
-            sm.purgeExpiredSessions()
             # Get the current session.
             current_session = sm.getSession(self.request, self.response)
-            # And increase the hit counter.
+            # And increase its hit counter.
             if current_session.count:
                 current_session.count += 1
             else:
                 current_session.count = 1
+            # Refresh the current session.
             current_session.refresh()
 
         # The MainPage adapter takes a context and the request object. We write
@@ -196,12 +199,23 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         self.response.out.write(page.render())
 
 
+class SessionWorker(google.appengine.ext.webapp.RequestHandler):
+    """Worker class to purge expired sessions."""
+
+    def post(self):
+         if _global_site_manager:
+            sm = _global_site_manager.getUtility(interfaces.ISessionManager)
+            # Remove expired sessions.
+            sm.purgeExpiredSessions()
+
+
 def application():
     """Returns WSGI application object."""
 
     # We register some request handlers for our application.
     app = google.appengine.ext.webapp.WSGIApplication([
-        ('/', DemoRequestHandler), 
+        ('/',               DemoRequestHandler), 
+        ('/purgesessions',  SessionWorker), 
     ], debug=True)
 
     return app

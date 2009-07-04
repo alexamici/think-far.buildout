@@ -118,6 +118,10 @@ class SessionManager(object):
             sid = cookie[len(self.cookie_name)+1:]
             session = self.sessions.get(sid)
 
+        if session:
+            if session.expires <= time.time():
+                session = None
+
         if not session:
             # We need a new session id.
             m = hashlib.md5()

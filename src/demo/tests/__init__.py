@@ -55,6 +55,7 @@ def test_index():
     nose.tools.assert_equal(response.status, '200 OK')
 
 
+@nose.tools.with_setup(setup_func, teardown_func)
 def test_session_provider():
     """Testing session provider"""
 
@@ -154,16 +155,17 @@ def test_persistent_sessions():
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
     # Create a session.
-    os.environ['HTTP_COOKIE']='demo_session=unknown'
     app.get('/')
     assert len(session_manager.sessions) == 1
 
-    # Create a session and set the expiration time to now.
-    session = demo.app.Session()
-    session.id = 'mesession'
+    # Create another session.
+    app.get('/')
+    assert len(session_manager.sessions) == 2
+
+    # Get one session from the session manager and let it expire.
+    session = session_manager.sessions.get(session_manager.sessions.keys()[0])
     session.expires = time.time()
     session.put()
-    assert len(session_manager.sessions) == 2
 
     # Purge expired sessions.
     session_manager.purgeExpiredSessions()
