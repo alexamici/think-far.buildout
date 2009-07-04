@@ -14,9 +14,6 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Sample application for running ZCA within Google App Engine."""
 
-import sys
-sys.path.insert(0, 'packages.zip')
-
 import cgi
 import google.appengine.api
 import google.appengine.api.labs.taskqueue
