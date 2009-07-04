@@ -178,7 +178,11 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         current_session = None
 
         # Add a session worker to the task queue which purges expired sessions.
-        google.appengine.api.labs.taskqueue.add(url='/purgesessions')
+        try:
+            google.appengine.api.labs.taskqueue.add(url='/purgesessions')
+        except google.appengine.api.labs.taskqueue.TransientError:
+            # Pass gracefully.
+            pass
 
         # Lookup our session manager.
         if _global_site_manager:
