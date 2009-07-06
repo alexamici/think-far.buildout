@@ -89,7 +89,7 @@ class SessionManager(object):
             raise TypeError, "The session class must implement ISession"
         self.session_cls  = session_class
 
-        if provider:
+        if provider != None:
             if not interfaces.ISessionProvider.providedBy(provider):
                 raise TypeError, "The provider must provide ISessionProvider"
             self.sessions = provider

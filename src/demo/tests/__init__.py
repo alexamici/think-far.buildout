@@ -154,6 +154,8 @@ def test_persistent_sessions():
     site_manager    = demo.app.getGlobalSiteManager()
     session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
 
+    assert isinstance(session_manager.sessions, demo.app.SessionProvider) == 1
+
     # Create a session.
     app.get('/')
     assert len(session_manager.sessions) == 1
