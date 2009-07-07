@@ -14,103 +14,24 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Sample application for running ZCA within Google App Engine."""
 
-import cgi
 import google.appengine.api
-import google.appengine.api.labs.taskqueue
-import google.appengine.ext.db
 import google.appengine.ext.webapp
 import interfaces
 import logging
 import pagetemplate
 import session
-import time
 import wsgiref.handlers
 import zope.component
 import zope.interface
 
-
-_global_site_manager = None  # The global site manager for registering adapters
-                             # and utilities.
-
-
-def getGlobalSiteManager():
-    """Returns global site manager."""
-
-    return _global_site_manager
-
-
-class Session(google.appengine.ext.db.Model):
-    """Persistent session implementation."""
-
-    zope.interface.implements(interfaces.ISession)
-
-    id      = google.appengine.ext.db.StringProperty()
-    expires = google.appengine.ext.db.FloatProperty()
-    count   = google.appengine.ext.db.IntegerProperty(indexed=False)
-
-    def __repr__(self):
-        return "Session(id='%s')" % self.id
-
-    def refresh(self):
-        self.expires = time.time() + 300
-        self.put()
-
-
-class SessionProvider(object):
-    """Dictionary-like implementation for querying sessions."""
-
-    zope.interface.implements(interfaces.ISessionProvider)
-
-    def __iter__(self):
-        for s in google.appengine.ext.db.GqlQuery("SELECT * FROM Session"):
-            yield s.id
-
-    def __len__(self):
-        return len([s for s in self])
-
-    def __setitem__(self, key, value):
-        pass
-
-    def __getitem__(self, key):
-        try:
-            result = google.appengine.ext.db.GqlQuery("SELECT * FROM Session "
-                                                      "WHERE id = '%s'"
-                                                      "LIMIT 1" % key)
-        except google.appengine.ext.db.BadQueryError:
-            raise KeyError
-
-        try:
-            return result[0]
-        except IndexError:
-            raise KeyError
-
-    def __delitem__(self, key):
-        s = self.get(key)
-        if s:
-            s.delete()
-        else:
-            raise KeyError
-
-    def get(self, key, default=None):
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def keys(self):
-        return list(self)
-
-    def purgeExpired(self):
-        now = time.time()
-        expired = google.appengine.ext.db.GqlQuery(
-                        "SELECT * FROM Session WHERE expires < %f" % now)
-        for s in expired:
-            s.delete()
+# The global site manager for registering adapters and utilities.
+site_manager = None
 
 
 class CounterView(object):
     """View for our counter."""
 
+    zope.component.adapts(interfaces.IContext, interfaces.IRequest)
     zope.interface.implements(interfaces.ICounterView)
 
     template = pagetemplate.PageTemplate('counter.pt')
@@ -128,6 +49,7 @@ class CounterView(object):
 class MainPage(object):
     """Implementation for the main page."""
 
+    zope.component.adapts(interfaces.IContext, interfaces.IRequest)
     zope.interface.implements(interfaces.IPage)
 
     template = pagetemplate.PageTemplate('index.pt')
@@ -171,43 +93,23 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         zope.interface.directlyProvides(self.request, interfaces.IRequest)
         zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
-        # We have no current session at this point of time.
-        current_session = None
+        # Get a valid session object by adapting the response.
+        session = interfaces.ISession(self.response)
 
-        # Add a session worker to the task queue which purges expired sessions.
-        try:
-            google.appengine.api.labs.taskqueue.add(url='/purgesessions')
-        except google.appengine.api.labs.taskqueue.TransientError:
-            # Pass gracefully.
-            pass
+        # Increase the count and refresh our session.
+        session.count += 1
+        session.refresh()
 
-        # Lookup our session manager.
-        if _global_site_manager:
-            sm = _global_site_manager.getUtility(interfaces.ISessionManager)
-            # Get the current session.
-            current_session = sm.getSession(self.request, self.response)
-            # And increase its hit counter.
-            if current_session.count:
-                current_session.count += 1
-            else:
-                current_session.count = 1
-            # Refresh the current session.
-            current_session.refresh()
+        # This is our context object. It holds the session.
+        context = Context(session)
 
-        # The MainPage adapter takes a context and the request object. We write
-        # its rendered output to the response object.
-        page = MainPage(Context(current_session), self.request)
+        # Try to get a named multi adapter for a context object and the
+        # request.
+        page = zope.component.getMultiAdapter((context, self.request),
+                                              interfaces.IPage, "index.html")
+
+        # And write its rendered output to the response object.
         self.response.out.write(page.render())
-
-
-class SessionWorker(google.appengine.ext.webapp.RequestHandler):
-    """Worker class to purge expired sessions."""
-
-    def post(self):
-         if _global_site_manager:
-            sm = _global_site_manager.getUtility(interfaces.ISessionManager)
-            # Remove expired sessions.
-            sm.purgeExpiredSessions()
 
 
 def application():
@@ -215,8 +117,7 @@ def application():
 
     # We register some request handlers for our application.
     app = google.appengine.ext.webapp.WSGIApplication([
-        ('/',               DemoRequestHandler), 
-        ('/purgesessions',  SessionWorker), 
+        ('/', DemoRequestHandler), 
     ], debug=True)
 
     return app
@@ -229,20 +130,25 @@ def initGlobalSiteManager():
     Google App Engine caches the global site manager between requests.
     """
 
-    global _global_site_manager
+    global site_manager
 
-    if _global_site_manager is None:
+    if site_manager is None:
         logging.debug("Creating global site manager")
-        _global_site_manager = zope.component.getGlobalSiteManager()
 
-        # Now we register an adapter.
-        _global_site_manager.registerAdapter(CounterView,
-                                (interfaces.IContext, interfaces.IRequest),
-                                interfaces.ICounterView)
+        # Get a global site manager instance.
+        site_manager = zope.component.getGlobalSiteManager()
 
-        # We need a global utility for managing sessions.
-        sm = session.SessionManager('demo', Session, SessionProvider())
-        _global_site_manager.registerUtility(sm)
+        # Let's register our adapter factories.
+        site_manager.registerAdapter(MainPage, name="index.html")
+        site_manager.registerAdapter(CounterView)
+        site_manager.registerAdapter(session.Session)
+
+
+def removeGlobalSiteManager():
+    """Deletes the global site manager instance."""
+
+    global site_manager
+    site_manager = None
 
 
 def main():

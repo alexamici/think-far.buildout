@@ -15,14 +15,9 @@
 """Testing demo."""
 
 import demo.app
-import demo.interfaces
-import demo.session
 import nose.tools
 import os
-import time
-import urllib
 import webtest
-import zope.component
 
 app = webtest.TestApp(demo.app.application())
 
@@ -33,18 +28,17 @@ def setup_func():
     # We need a global site manager.
     demo.app.initGlobalSiteManager()
 
-    # For some reason the test expects following environment variable
-    # to be set.
-    os.environ['USER_EMAIL'] = 'foo@bar.net'
-
 
 def teardown_func():
     """Tear down test fixtures."""
 
-    demo.app._global_site_manager = None
-    sessions = demo.app.SessionProvider()
-    for s in sessions:
-        del sessions[s]
+    demo.app.removeGlobalSiteManager()
+
+
+def test_main():
+    """Tries to call the main function"""
+
+    demo.app.main()
 
 
 @nose.tools.with_setup(setup_func, teardown_func)
@@ -56,119 +50,5 @@ def test_index():
 
 
 @nose.tools.with_setup(setup_func, teardown_func)
-def test_session_provider():
-    """Testing session provider"""
-
-    # Create a session provider.
-    sessions = demo.app.SessionProvider()
-    nose.tools.assert_equal(len(sessions), 0)
-
-    # Create a session.
-    session = demo.app.Session()
-    session.id = 'mesession'
-    session.put()
-    nose.tools.assert_equal(len(sessions), 1)
-    nose.tools.assert_equal(sessions.keys(), ['mesession'])
-
-
-@nose.tools.raises(KeyError)
-def test_session_provider_key_error():
-    """Testing session provider exception"""
-
-    sessions = demo.app.SessionProvider()
-    del sessions['unknown']
-
-
-def test_session_manager():
-    """Testing session manager"""
-
-    session_manager = demo.session.SessionManager('test')
-    assert repr(session_manager) == "SessionManager(test)"
-
-
-def test_session_manager_with_session():
-    """Testing simple non-persistent sessions"""
-
-    # Create a session which expires right after creation.
-    session = demo.session.Session()
-    session.id = 'mesession'
-    session.expires = time.time()
-    assert repr(session) == "Session(id='mesession')"
-
-    # Create a session provider to store our session.
-    sessions = demo.session.SessionProvider()
-    sessions['mesession'] = session
-    assert len(sessions) == 1
-
-    # Purge expired sessions.
-    sessions.purgeExpired()
-
-    # Store our session again.
-    sessions['mesession'] = session
-    assert len(sessions) == 1
-
-    # Check the session manager api.
-    sm = demo.session.SessionManager('test', provider=sessions)
-    sm.purgeExpiredSessions()
-    assert len(sm.sessions) == 0
-
-
-@nose.tools.raises(TypeError)
-def test_session_manager_with_wrong_provider():
-    """Testing session manager with a provider of wrong type"""
-
-    demo.session.SessionManager('test', provider=type)
-
-
-@nose.tools.raises(TypeError)
-def test_session_manager_with_wrong_session_class():
-    """Testing session manager with wrong session class"""
-
-    demo.session.SessionManager('test', session_class=type)
-
-
-@nose.tools.raises(TypeError)
-def test_session_manager_with_wrong_request():
-    """Testing session manager with wrong request"""
-
-    session_manager = demo.session.SessionManager('test')
-    session_manager.getSession(object(), object())
-
-
-@nose.tools.raises(TypeError)
-def test_session_manager_with_wrong_response():
-    """Testing session manager with wrong response"""
-
-    session_manager = demo.session.SessionManager('test')
-    class DummyRequest:
-        zope.interface.implements(demo.interfaces.IRequest)
-    request = DummyRequest()
-    session_manager.getSession(request, object())
-
-
-@nose.tools.with_setup(setup_func, teardown_func)
-def test_persistent_sessions():
-    """Testing persistent sessions"""
-
-    # Get the session manager.
-    site_manager    = demo.app.getGlobalSiteManager()
-    session_manager = site_manager.getUtility(demo.interfaces.ISessionManager)
-
-    assert isinstance(session_manager.sessions, demo.app.SessionProvider) == 1
-
-    # Create a session.
-    app.get('/')
-    assert len(session_manager.sessions) == 1
-
-    # Create another session.
-    app.get('/')
-    assert len(session_manager.sessions) == 2
-
-    # Get one session from the session manager and let it expire.
-    session = session_manager.sessions.get(session_manager.sessions.keys()[0])
-    session.expires = time.time()
-    session.put()
-
-    # Purge expired sessions.
-    session_manager.purgeExpiredSessions()
-    assert len(session_manager.sessions) == 1
+def test_sessions():
+    """Testing sessions"""
