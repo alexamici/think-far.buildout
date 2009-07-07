@@ -51,7 +51,6 @@ class SessionPropertyCookie(object):
     def __init__(self, name, type_):
         self.name = DEFAULT_SESSION_KEY_PREFIX + name
         self.type = type_
-        self.default = type_()
  
     def __set__(self, instance, value):
         c = Cookie.SimpleCookie()
@@ -72,7 +71,7 @@ class SessionPropertyCookie(object):
         if self.name in cookies:
             result = self.type(cookies[self.name])
             return result
-        return self.default
+        return self.type()
  
 
 def FloatProperty(name):
