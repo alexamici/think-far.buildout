@@ -48,42 +48,49 @@ class SessionPropertyCookie(object):
     Stores keys and values in cookies.
     """
         
-    def __init__(self, name, type_):
-        self.name = DEFAULT_SESSION_KEY_PREFIX + name
+    def __init__(self, type_):
         self.type = type_
+
+    @classmethod
+    def _name(cls, self, instance):
+        for k in instance.__class__.__dict__:
+            if isinstance(instance.__class__.__dict__[k], cls):
+                if instance.__class__.__dict__[k] == self:
+                    return DEFAULT_SESSION_KEY_PREFIX + k
  
     def __set__(self, instance, value):
         c = Cookie.SimpleCookie()
-        c[self.name] = value
+        c[self._name(self, instance)] = value
         h = re.compile('^Set-Cookie: ').sub('', c.output(), count=1)
         instance.response.headers.add_header('Set-Cookie', str(h))
  
     def __get__(self, instance, owner):
         data = instance.response.headers.get_all('Set-Cookie')
         cookies = getdict(data)
-        if self.name in cookies:
-            return self.type(cookies[self.name])
+        name = self._name(self, instance)
+        if name in cookies:
+            return self.type(cookies[name])
         if 'HTTP_COOKIE' in os.environ:
             data = [c.strip() for c in os.environ.get('HTTP_COOKIE').split(';')]
         else:
             data = []
         cookies = getdict(data)
-        if self.name in cookies:
-            result = self.type(cookies[self.name])
+        if name in cookies:
+            result = self.type(cookies[name])
             return result
         return self.type()
  
 
-def FloatProperty(name):
-    return SessionPropertyCookie(name, float)
+def FloatProperty():
+    return SessionPropertyCookie(float)
 
 
-def IntegerProperty(name):
-    return SessionPropertyCookie(name, int)
+def IntegerProperty():
+    return SessionPropertyCookie(int)
 
 
-def StringProperty(name):
-    return SessionPropertyCookie(name, str)
+def StringProperty():
+    return SessionPropertyCookie(str)
 
 
 class Session(object):
@@ -115,9 +122,9 @@ class Session(object):
     zope.component.adapts(interfaces.IResponse)
     zope.interface.implements(interfaces.ISession)
 
-    count   = IntegerProperty('count')
-    expires = FloatProperty('expires')
-    id      = StringProperty('id')
+    count   = IntegerProperty()
+    expires = FloatProperty()
+    id      = StringProperty()
 
     def __init__(self, response):
         self.response = response
