@@ -46,6 +46,27 @@ class SessionPropertyCookie(object):
     """Session property implementation.
 
     Stores keys and values in cookies.
+
+    >>> import wsgiref
+    >>> class TestResponse(object):
+    ...     def __init__(self):
+    ...         self.__wsgi_headers = []
+    ...         self.headers = wsgiref.headers.Headers(self.__wsgi_headers)
+    >>> class Foo:
+    ...     p = SessionPropertyCookie(str)
+    ...     def __init__(self, response):
+    ...         self.response = response
+    >>> foo = Foo(TestResponse())
+    >>> foo.p
+    ''
+    >>> foo.p = 'test'
+    >>> foo.p
+    'test'
+    >>> import os
+    >>> os.environ['HTTP_COOKIE'] = DEFAULT_SESSION_KEY_PREFIX + 'p' + '=baz'
+    >>> foo = Foo(TestResponse())
+    >>> foo.p
+    'baz'
     """
         
     def __init__(self, type_):
@@ -112,11 +133,6 @@ class Session(object):
     >>> s.refresh()
     >>> assert s.expires > 0.0
     >>> assert type(s.id) == str
-    >>> import os
-    >>> os.environ['HTTP_COOKIE'] = 'session_id=test'
-    >>> s = Session(TestResponse())
-    >>> s.id
-    'test'
     """
 
     zope.component.adapts(interfaces.IResponse)
