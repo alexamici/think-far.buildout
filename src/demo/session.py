@@ -40,7 +40,35 @@ def getdict(data):
         k, v = e.split('=')
         d[k] = v
     return d
- 
+
+
+def _lookupowner(attr, class_):
+    """Returns first possible owner.
+
+    >>> class C:
+    ...     i = 0
+    >>> class D(C):
+    ...     pass
+    >>> assert _lookupowner(int, D) == C
+    >>> class E:
+    ...     pass
+    >>> assert _lookupowner(int, E) == None
+    >>> class F(D):
+    ...     pass
+    >>> assert _lookupowner(int, F) == D
+    >>> class G(E, C, F):
+    ...     pass
+    >>> assert _lookupowner(int, G) == C
+    """
+
+    vtypes = [type(v) for v in class_.__dict__.values()]
+    if attr not in vtypes:
+        for c in class_.__bases__:
+            if _lookupowner(attr, c) is not None:
+                return c
+    else:
+        return class_
+
 
 class SessionPropertyCookie(object):
     """Session property implementation.
@@ -81,9 +109,10 @@ class SessionPropertyCookie(object):
 
     @classmethod
     def _name(cls, self, instance):
-        for k in instance.__class__.__dict__:
-            if isinstance(instance.__class__.__dict__[k], cls):
-                if instance.__class__.__dict__[k] == self:
+        owner = _lookupowner(cls, instance.__class__)
+        for k in owner.__dict__:
+            if isinstance(owner.__dict__[k], cls):
+                if owner.__dict__[k] == self:
                     return DEFAULT_SESSION_KEY_PREFIX + k
  
     def __set__(self, instance, value):
