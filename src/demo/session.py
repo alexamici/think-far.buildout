@@ -67,6 +67,13 @@ class SessionPropertyCookie(object):
     >>> foo = Foo(TestResponse())
     >>> foo.p
     'baz'
+    >>> class Baz:
+    ...     p = SessionPropertyCookie(str)
+    >>> baz = Baz()
+    >>> baz.p
+    Traceback (most recent call last):
+    ...
+    AttributeError: Baz instance has no attribute 'response'
     """
         
     def __init__(self, type_):
