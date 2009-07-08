@@ -36,7 +36,7 @@ def teardown_func():
 
 
 def test_main():
-    """Tries to call the main function"""
+    """Calling the main function"""
 
     demo.app.main()
 
