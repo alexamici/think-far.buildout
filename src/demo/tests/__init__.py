@@ -16,7 +16,6 @@
 
 import demo.app
 import nose.tools
-import os
 import webtest
 
 app = webtest.TestApp(demo.app.application())
