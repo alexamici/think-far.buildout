@@ -94,14 +94,14 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         zope.interface.directlyProvides(self.response, interfaces.IResponse)
 
         # Get a valid session object by adapting the response.
-        session = interfaces.ISession(self.response)
+        sess = interfaces.ISession(self.response)
 
         # Increase the count and refresh our session.
-        session.count += 1
-        session.refresh()
+        sess.count += 1
+        sess.refresh()
 
         # This is our context object. It holds the session.
-        context = Context(session)
+        context = Context(sess)
 
         # Try to get a named multi adapter for a context object and the
         # request.
