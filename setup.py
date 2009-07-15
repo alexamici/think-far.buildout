@@ -48,9 +48,9 @@ setup (
         'Topic :: Internet :: WWW/HTTP',
         ],
     url='',
-    packages=find_packages('src/demo'),
+    packages=find_packages(os.sep.join(['src', 'demo'])),
     include_package_data=True,
-    package_dir = {'':'src/demo'},
+    package_dir = {'': os.sep.join(['src', 'demo'])},
     install_requires=[
         'setuptools',
         'zope.component',
