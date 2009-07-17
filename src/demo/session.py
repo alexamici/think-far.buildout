@@ -15,7 +15,7 @@
 """Lightweight session implementation."""
 
 import Cookie
-import binascii
+import base64
 import hashlib
 import interfaces
 import os
@@ -82,20 +82,20 @@ class SessionPropertyCookie(object):
     ...         self.__wsgi_headers = []
     ...         self.headers = wsgiref.headers.Headers(self.__wsgi_headers)
     >>> class Foo(object):
-    ...     s = SessionPropertyCookie(str)
+    ...     s = SessionPropertyCookie(unicode)
     ...     def __init__(self, response):
     ...         self.response = response
     >>> foo = Foo(TestResponse())
     >>> foo.s
-    ''
-    >>> foo.s = 'test'
+    u''
+    >>> foo.s = u'test'
     >>> foo.s
-    'test'
+    u'test'
     >>> import os
-    >>> os.environ['HTTP_COOKIE'] = DEFAULT_SESSION_KEY_PREFIX + 's' + '=76616c'
+    >>> os.environ['HTTP_COOKIE'] = DEFAULT_SESSION_KEY_PREFIX + 's' + '=dmFs'
     >>> foo = Foo(TestResponse())
     >>> foo.s
-    'val'
+    u'val'
     >>> class Baz:
     ...     s = SessionPropertyCookie(str)
     >>> baz = Baz()
@@ -108,9 +108,9 @@ class SessionPropertyCookie(object):
     >>> class MyFoo(Base, Foo):
     ...     pass
     >>> myfoo = MyFoo(TestResponse())
-    >>> myfoo.s = 'new value'
+    >>> myfoo.s = u'new value'
     >>> myfoo.s
-    'new value'
+    u'new value'
     """
         
     def __init__(self, t):
@@ -124,13 +124,13 @@ class SessionPropertyCookie(object):
                     return k
 
     def encode(self, value):
-        if self.type == str:
-            return binascii.hexlify(value)
+        if self.type in (str, unicode):
+            return base64.b64encode(value)
         return self.type(value)
 
     def decode(self, value):
-        if self.type == str:
-            return binascii.unhexlify(value)
+        if self.type in (str, unicode):
+            return self.type(base64.b64decode(value))
         return self.type(value)
 
     def __set__(self, instance, value):
