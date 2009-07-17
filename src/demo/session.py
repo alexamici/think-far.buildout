@@ -32,13 +32,13 @@ DEFAULT_SESSION_LIFETIME   = 300
 def getdict(data):
     """Returns dictionary from key-value pairs in given data.
 
-    >>> getdict(['foo=bar', 'number=42'])
-    {'foo': 'bar', 'number': '42'}
+    >>> getdict(['foo=bar', 'number=42', 'b64=dGVzdA=='])
+    {'foo': 'bar', 'number': '42', 'b64': 'dGVzdA=='}
     """
 
     d = {}
     for e in data:
-        k, v = e.split('=')
+        k, v = e.split('=', 1)
         d[k] = v
     return d
 
