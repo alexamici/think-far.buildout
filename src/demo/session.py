@@ -15,6 +15,7 @@
 """Lightweight session implementation."""
 
 import Cookie
+import binascii
 import hashlib
 import interfaces
 import os
@@ -42,32 +43,32 @@ def getdict(data):
     return d
 
 
-def _lookupowner(attr, class_):
+def lookupowner(klass, attr):
     """Returns first possible owner.
 
     >>> class C:
     ...     i = 0
     >>> class D(C):
     ...     pass
-    >>> assert _lookupowner(int, D) == C
+    >>> assert lookupowner(D, int) == C
     >>> class E:
     ...     pass
-    >>> assert _lookupowner(int, E) == None
+    >>> assert lookupowner(E, int) == None
     >>> class F(D):
     ...     pass
-    >>> assert _lookupowner(int, F) == D
+    >>> assert lookupowner(F, int) == D
     >>> class G(E, C, F):
     ...     pass
-    >>> assert _lookupowner(int, G) == C
+    >>> assert lookupowner(G, int) == C
     """
 
-    vtypes = [type(v) for v in class_.__dict__.values()]
-    if attr not in vtypes:
-        for c in class_.__bases__:
-            if _lookupowner(attr, c) is not None:
+    attrs = [type(v) for v in klass.__dict__.values()]
+    if attr not in attrs:
+        for c in klass.__bases__:
+            if lookupowner(c, attr) is not None:
                 return c
     else:
-        return class_
+        return klass
 
 
 class SessionPropertyCookie(object):
@@ -80,61 +81,78 @@ class SessionPropertyCookie(object):
     ...     def __init__(self):
     ...         self.__wsgi_headers = []
     ...         self.headers = wsgiref.headers.Headers(self.__wsgi_headers)
-    >>> class Foo:
-    ...     p = SessionPropertyCookie(str)
+    >>> class Foo(object):
+    ...     s = SessionPropertyCookie(str)
     ...     def __init__(self, response):
     ...         self.response = response
     >>> foo = Foo(TestResponse())
-    >>> foo.p
+    >>> foo.s
     ''
-    >>> foo.p = 'test'
-    >>> foo.p
+    >>> foo.s = 'test'
+    >>> foo.s
     'test'
     >>> import os
-    >>> os.environ['HTTP_COOKIE'] = DEFAULT_SESSION_KEY_PREFIX + 'p' + '=baz'
+    >>> os.environ['HTTP_COOKIE'] = DEFAULT_SESSION_KEY_PREFIX + 's' + '=76616c'
     >>> foo = Foo(TestResponse())
-    >>> foo.p
-    'baz'
+    >>> foo.s
+    'val'
     >>> class Baz:
-    ...     p = SessionPropertyCookie(str)
+    ...     s = SessionPropertyCookie(str)
     >>> baz = Baz()
-    >>> baz.p
+    >>> baz.s
     Traceback (most recent call last):
     ...
     AttributeError: Baz instance has no attribute 'response'
+    >>> class Base:
+    ...     pass
+    >>> class MyFoo(Base, Foo):
+    ...     pass
+    >>> myfoo = MyFoo(TestResponse())
+    >>> myfoo.s = 'new value'
+    >>> myfoo.s
+    'new value'
     """
         
-    def __init__(self, type_):
-        self.type = type_
+    def __init__(self, t):
+        self.type = t
 
-    @classmethod
-    def _name(cls, self, instance):
-        owner = _lookupowner(cls, instance.__class__)
+    def attrname(self, instance):
+        owner = lookupowner(instance.__class__, self.__class__)
         for k in owner.__dict__:
-            if isinstance(owner.__dict__[k], cls):
+            if isinstance(owner.__dict__[k], self.__class__):
                 if owner.__dict__[k] == self:
-                    return DEFAULT_SESSION_KEY_PREFIX + k
- 
+                    return k
+
+    def encode(self, value):
+        if self.type == str:
+            return binascii.hexlify(value)
+        return self.type(value)
+
+    def decode(self, value):
+        if self.type == str:
+            return binascii.unhexlify(value)
+        return self.type(value)
+
     def __set__(self, instance, value):
+        v = self.encode(value)
         c = Cookie.SimpleCookie()
-        c[self._name(self, instance)] = value
+        c[DEFAULT_SESSION_KEY_PREFIX+self.attrname(instance)] = v
         h = re.compile('^Set-Cookie: ').sub('', c.output(), count=1)
         instance.response.headers.add_header('Set-Cookie', str(h))
- 
+
     def __get__(self, instance, owner):
         data = instance.response.headers.get_all('Set-Cookie')
         cookies = getdict(data)
-        name = self._name(self, instance)
+        name = DEFAULT_SESSION_KEY_PREFIX + self.attrname(instance)
         if name in cookies:
-            return self.type(cookies[name])
+            return self.decode(cookies[name])
         if 'HTTP_COOKIE' in os.environ:
             data = [c.strip() for c in os.environ.get('HTTP_COOKIE').split(';')]
         else:
             data = []
         cookies = getdict(data)
         if name in cookies:
-            result = self.type(cookies[name])
-            return result
+            return self.decode(cookies[name])
         return self.type()
  
 
