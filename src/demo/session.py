@@ -171,8 +171,8 @@ def StringProperty():
 class Session(object):
     """Sessions allow associating information with individual visitors.
 
-    This session class works as an adapter for a request-response pair. The
-    session properties will be stored as simple cookies.
+    This session class is an adapter for a response object. The session
+    properties will be stored as simple cookies.
 
     >>> import wsgiref
     >>> class TestResponse(object):
