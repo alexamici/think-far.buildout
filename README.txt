@@ -11,7 +11,7 @@ Running the application out of the box
 
 Build and run the application::
 
-  $ python bootstrap/bootstrap.py
+  $ python bootstrap.py
   $ ./bin/buildout
   $ ./bin/demo parts/demo
 
@@ -38,3 +38,11 @@ Testing
 Run all tests by typing the following command::
 
   $ ./bin/nosetests -c nose.cfg
+
+
+Running pydoc
+-------------
+
+To run pydoc with the correct import paths enter following command::
+
+  $ ./bin/python /path/to/python/bin/pydoc -p <PORT>
