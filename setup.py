@@ -24,7 +24,7 @@ def read(*rnames):
 
 setup (
     name='demo',
-    version='1.1.1',
+    version='1.1.2',
     author="Tobias Rodaebel",
     author_email="tobias.rodaebel@googlemail.com",
     description="Demonstrates how to use the Zope Component Architecture "
