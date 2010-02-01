@@ -24,7 +24,7 @@ def read(*rnames):
 
 setup (
     name='demo',
-    version='1.1.2',
+    version='1.2.0',
     author="Tobias Rodaebel",
     author_email="tobias.rodaebel@googlemail.com",
     description="Demonstrates how to use the Zope Component Architecture "
@@ -52,10 +52,10 @@ setup (
     include_package_data=True,
     package_dir = {'': os.sep.join(['src', 'demo'])},
     install_requires=[
+        'Chameleon',
         'setuptools',
         'zope.component',
         'zope.interface',
-        'zope.pagetemplate',
         ],
     zip_safe=False,
     )

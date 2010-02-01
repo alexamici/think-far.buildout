@@ -37,7 +37,7 @@ Testing
 
 Run all tests by typing the following command::
 
-  $ ./bin/nosetests -c nose.cfg
+  $ ./bin/nosetests
 
 
 Running pydoc

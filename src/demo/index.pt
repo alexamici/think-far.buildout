@@ -7,8 +7,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>ZCA on Google App Engine</title>
-    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
+    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print" />
     <!--[if lt IE 8]>
       <link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection">
     <![endif]-->
@@ -30,13 +30,13 @@
       </div>
       <div class="span-24 headline">
         <h1>Zope Component Architecture on Google App Engine</h1>
-        <hr>
+        <hr />
         <h2 class="emph">
           Bring together what belongs together - growing with modern building
           materials.
         </h2>
       </div>
-      <hr>
+      <hr />
       <div class="span-17 colborder">
         <p>
           <span class="capital">T</span>he Zope Component Architecture <strong>
@@ -55,8 +55,7 @@
           utility.
         </p>
         <p>
-          <span class="capital">A</span>nd this page is rendered by the Zope
-          Page Template package.
+          <span class="capital">A</span>nd this page is rendered by Chameleon.
         </p>
       </div>
       <div class="span-6 last">
@@ -72,10 +71,10 @@
           <a href="http://muthukadan.net/docs/zca.html">Comprehensive Guide to
           the Zope Component Architecture</a>.
         </p>
-        <div id="counter" tal:content="structure view/counter" />
+        <div id="counter" tal:content="structure view.counter" />
       </div>
       <div id="debug" class="span-24" align="right">
-        <pre tal:content="context/session" />
+        <pre tal:content="context.session" />
       </div>
     </div>
   </body>

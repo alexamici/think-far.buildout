@@ -14,11 +14,12 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Sample application for running ZCA within Google App Engine."""
 
+import chameleon.zpt.loader
 import google.appengine.api
 import google.appengine.ext.webapp
 import interfaces
 import logging
-import pagetemplate
+import os
 import session
 import wsgiref.handlers
 import zope.component
@@ -27,6 +28,11 @@ import zope.interface
 # The global site manager for registering adapters and utilities.
 site_manager = None
 
+template_path = os.path.dirname(__file__)
+template_loader = chameleon.zpt.loader.TemplateLoader(
+    template_path,
+    auto_reload=os.environ.get('SERVER_SOFTWARE', '').startswith('Dev'))
+
 
 class CounterView(object):
     """View for our counter."""
@@ -34,16 +40,13 @@ class CounterView(object):
     zope.component.adapts(interfaces.IContext, interfaces.IRequest)
     zope.interface.implements(interfaces.ICounterView)
 
-    template = pagetemplate.PageTemplate('counter.pt')
-
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def render(self):
-        return self.template(view=self,
-                             context=self.context,
-                             request=self.request)
+        template = template_loader.load('counter.pt')
+        return template(view=self, context=self.context, request=self.request)
 
 
 class MainPage(object):
@@ -52,12 +55,11 @@ class MainPage(object):
     zope.component.adapts(interfaces.IContext, interfaces.IRequest)
     zope.interface.implements(interfaces.IPage)
 
-    template = pagetemplate.PageTemplate('index.pt')
-
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
+    @property
     def counter(self):
         """Returns counter."""
 
@@ -68,9 +70,8 @@ class MainPage(object):
     def render(self):
         """Writes rendered output to the response object."""
 
-        return self.template(view=self,
-                             context=self.context,
-                             request=self.request)
+        template = template_loader.load('index.pt')
+        return template(view=self, context=self.context, request=self.request)
 
 
 class Context(object):
