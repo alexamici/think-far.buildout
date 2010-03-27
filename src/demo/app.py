@@ -14,9 +14,11 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Sample application for running ZCA within Google App Engine."""
 
+import beaker.middleware
 import chameleon.zpt.loader
 import google.appengine.api
 import google.appengine.ext.webapp
+import google.appengine.ext.webapp.util
 import interfaces
 import logging
 import os
@@ -97,9 +99,17 @@ class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
         # Get a valid session object by adapting the response.
         sess = interfaces.ISession(self.response)
 
+        # Get a beaker session.
+        beaker_sess = self.request.environ['beaker.session']
+
         # Increase the count and refresh our session.
         sess.count += 1
         sess.refresh()
+
+        if not beaker_sess.has_key('count'):
+            beaker_sess['count'] = 0
+        beaker_sess['count'] += 1
+        beaker_sess.save()
 
         # This is our context object. It holds the session.
         context = Context(sess)
@@ -156,7 +166,17 @@ def main():
     """The main function."""
 
     initGlobalSiteManager()
-    wsgiref.handlers.CGIHandler().run(application())
+
+    session_opts = {
+        'session.cookie_domain': 'localhost',
+        'session.cookie_expires': True,
+        'session.type': 'cookie',
+        'session.validate_key': 'secret'
+    }
+
+    app = beaker.middleware.SessionMiddleware(application(), session_opts)
+
+    google.appengine.ext.webapp.util.run_wsgi_app(app)
 
 
 if __name__ == '__main__':

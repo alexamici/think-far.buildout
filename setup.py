@@ -53,6 +53,7 @@ setup (
     package_dir = {'': os.sep.join(['src', 'demo'])},
     install_requires=[
         'Chameleon',
+        'beaker',
         'setuptools',
         'zope.component',
         'zope.interface',
