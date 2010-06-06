@@ -1,6 +1,9 @@
 
-    >>> from thinkfar.gae import Asset
-    >>> bike = Asset()
-    >>> bike.name = 'Blue Mountain Bike'
+    >>> from thinkfar.gae.model import Asset
+    >>> from google.appengine.api import users
+    
+    >>> user = users.get_current_user()
+    
+    >>> bike = Asset(name='Blue Mountain Bike', owner=user)
     >>> bike.purcase_date = '2010-02-28'
     >>> bike.purcase_price = 300.0
