@@ -1,0 +1,6 @@
+
+    >>> from thinkfar.gae import Asset
+    >>> bike = Asset()
+    >>> bike.name = 'Blue Mountain Bike'
+    >>> bike.purcase_date = '2010-02-28'
+    >>> bike.purcase_price = 300.0

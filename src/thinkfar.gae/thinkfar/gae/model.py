@@ -32,6 +32,6 @@ liabilities = db.GqlQuery("SELECT * FROM Liability WHERE owner = :owner", 'ale')
 
 assets_market_total = sum(a.market_price for a in assets)
 assets_repurcase_total = sum(a.repurcase_price for a in assets)
-liabilities_outstanding_total = sum(l.outstanding_debt fro l in liabilities)
+liabilities_outstanding_total = sum(l.outstanding_debt for l in liabilities)
 
 print assets_market_total - liabilities_outstanding_total
