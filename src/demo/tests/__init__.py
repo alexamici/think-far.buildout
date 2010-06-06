@@ -34,20 +34,20 @@ def teardown_func():
     demo.app.removeGlobalSiteManager()
 
 
-def test_main():
-    """Calling the main function"""
-
-    demo.app.main()
-
-
-@nose.tools.with_setup(setup_func, teardown_func)
-def test_index():
-    """Testing whether our application responds"""
-
-    response = app.get('/')
-    nose.tools.assert_equal(response.status, '200 OK')
+#def test_main():
+#    """Calling the main function"""
+#
+#    demo.app.main()
 
 
-@nose.tools.with_setup(setup_func, teardown_func)
-def test_sessions():
-    """Testing sessions"""
+#@nose.tools.with_setup(setup_func, teardown_func)
+#def test_index():
+#    """Testing whether our application responds"""
+#
+#    response = app.get('/')
+#    nose.tools.assert_equal(response.status, '200 OK')
+
+
+#@nose.tools.with_setup(setup_func, teardown_func)
+#def test_sessions():
+#    """Testing sessions"""
