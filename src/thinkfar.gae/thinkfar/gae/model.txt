@@ -1,9 +1,18 @@
 
+Most stuff refers to the currently logged user:
+
+    >>> from google.appengine.api.users import User
+    >>> current_user = User(email=u'sid@pf.com')
+
+First we can describe assets and asset groups
+
     >>> from thinkfar.gae.model import Asset
-    >>> from google.appengine.api import users
-    
-    >>> user = users.get_current_user()
-    
-    >>> bike = Asset(name='Blue Mountain Bike', owner=user)
-    >>> bike.purcase_date = '2010-02-28'
-    >>> bike.purcase_price = 300.0
+    >>> from datetime import date
+
+I've got a bike
+
+    >>> bike = Asset(name=u'bike', owner=current_user, purcase_date=date(1967, 3, 23))
+    >>> bike
+    <Asset object name="bike" owner="sid@pf.com">
+    >>> bike_key = bike.put()
+
