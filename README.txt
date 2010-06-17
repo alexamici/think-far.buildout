@@ -1,10 +1,6 @@
 =======================
-Bridal demo application
+Think-Far application
 =======================
-
-This application demonstrates the usage of various zope packages within Google
-App Engine.
-
 
 Running the application out of the box
 --------------------------------------
@@ -37,8 +33,8 @@ Testing
 
 Run all tests by typing the following command::
 
-  $ ./bin/nosetests
-
+  $ ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
+      --gae-application=src/demo/ src/thinkfar.gae/
 
 Running pydoc
 -------------
