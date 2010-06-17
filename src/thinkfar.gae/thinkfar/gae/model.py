@@ -28,9 +28,11 @@ class Asset(db.Model):
         return u'<%s object name="%s" owner="%s">' % \
             (self.__class__.__name__, self.name, self.owner)
 
-class AssetValues(db.Model):
-    estimated_market_ask = db.FloatProperty()
-    estimated_market_bid = db.FloatProperty()
+class EstimatedValue(db.Model):
+    """Estimated value including ask/bid spread"""
+    estimated_value_date = db.DateProperty()
+    estimated_value_ask = db.FloatProperty()
+    estimated_value_bid = db.FloatProperty()
 
 class Liability(db.Model):
     owner = db.UserProperty()
