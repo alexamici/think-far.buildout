@@ -24,7 +24,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        # -*- Extra requirements: -*-
+        'repoze.bfg',
     ],
     entry_points="""
     # -*- Entry points: -*-

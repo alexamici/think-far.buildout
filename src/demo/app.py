@@ -27,6 +27,8 @@ import wsgiref.handlers
 import zope.component
 import zope.interface
 
+from thinkfar.gae import application as thinkfar_application
+
 # The global site manager for registering adapters and utilities.
 site_manager = None
 
@@ -85,7 +87,7 @@ class Context(object):
         self.session = s
 
 
-class DemoRequestHandler(google.appengine.ext.webapp.RequestHandler):
+class MainRequestHandler(google.appengine.ext.webapp.RequestHandler):
     """The demo request handler."""
 
     def get(self):
@@ -128,7 +130,7 @@ def application():
 
     # We register some request handlers for our application.
     app = google.appengine.ext.webapp.WSGIApplication([
-        ('/', DemoRequestHandler), 
+        ('/', MainRequestHandler), 
     ], debug=True)
 
     return app
@@ -174,7 +176,7 @@ def main():
         'session.validate_key': 'secret'
     }
 
-    app = beaker.middleware.SessionMiddleware(application(), session_opts)
+    app = beaker.middleware.SessionMiddleware(thinkfar_application(), session_opts)
 
     google.appengine.ext.webapp.util.run_wsgi_app(app)
 
