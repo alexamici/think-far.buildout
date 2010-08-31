@@ -9,10 +9,17 @@ First we can describe assets and asset groups
     >>> from thinkfar.gae.model import Asset
     >>> from datetime import date
 
-I've got a bike
+I've got a bike.
 
-    >>> bike = Asset(name=u'bike', owner=current_user, purcase_date=date(1967, 3, 23))
+    >>> bike = Asset(name=u'good looking bike', owner=current_user, purcase_date=date(1967, 3, 23))
+    >>> bike.purcase_price = 100.
     >>> bike
-    <Asset object name="bike" owner="sid@pf.com">
+    <Asset object name="good looking bike" owner="sid@pf.com">
     >>> bike_key = bike.put()
+
+I've got a cloak.
+
+    >>> cloak = Asset(name=u'red and black cloak', owner=current_user, purcase_date=date(1967, 3, 23),
+    ...     purcese_price=20)
+    >>> cloak_key = cloak.put()
 
