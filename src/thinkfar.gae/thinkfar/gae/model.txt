@@ -1,25 +1,52 @@
 
+We define generic asset model for users to choose:
+
+    >>> from thinkfar.gae.model import AssetModel
+    >>> big_ticket_item = AssetModel(name=u'Big ticket item',
+    ...     description=u'Generic representation of a identifieble big ticket item: e.g. a bike')
+    >>> big_ticket_item_key = big_ticket_item.put()
+    >>> commodity_stock = AssetModel(name=u'Commodity stock',
+    ...     description=u'Generic representation of commodity stock: e.g. a clan of gingerbread men')
+    >>> commodity_stock_key = commodity_stock.put()
+
 Most stuff refers to the currently logged user:
 
     >>> from google.appengine.api.users import User
-    >>> current_user = User(email=u'sid@pf.com')
+    >>> current_user = User(email=u'syd@pf.com')
 
-First we can describe assets and asset groups
+Users have one or more portfolios of assets:
+
+    >>> from thinkfar.gae.model import Portfolio
+    >>> piper_belongings = Portfolio(owner=current_user, name=u'Piper Belongings')
+    >>> piper_belongings
+    <Portfolio object name=u'Piper Belongings' owner=u'syd@pf.com'>
+    >>> piper_belongings_key = piper_belongings.put()
+
+and we can associate each asset to a porfolio.
 
     >>> from thinkfar.gae.model import Asset
     >>> from datetime import date
 
 I've got a bike.
 
-    >>> bike = Asset(name=u'good looking bike', owner=current_user, purcase_date=date(1967, 3, 23))
+    >>> bike = Asset(asset_model=big_ticket_item, name=u'Bike', 
+    ...     identity=u'My good looking bike', portfolio=piper_belongings)
+    >>> purcase_date=date(1967, 3, 23)
     >>> bike.purcase_price = 100.
     >>> bike
-    <Asset object name="good looking bike" owner="sid@pf.com">
+    <Asset object name=u'Bike' identity=u'My good looking bike' portfolio=u'Piper Belongings' owner=u'syd@pf.com'>
     >>> bike_key = bike.put()
 
-I've got a cloak.
+I've got a clan of gingerbread men.
 
-    >>> cloak = Asset(name=u'red and black cloak', owner=current_user, purcase_date=date(1967, 3, 23),
-    ...     purcese_price=20)
-    >>> cloak_key = cloak.put()
+    >>> clan = Asset(asset_model=commodity_stock, name='Clan of gingerbread men',
+    ...     portfolio=piper_belongings)
+    >>> purcase_date=date(1967, 3, 23)
+    >>> purcese_price=20
+    >>> clan_key = clan.put()
+
+I'll give you anything, everything if you want things.
+
+    >>> len(piper_belongings.assets.fetch(1000)) == 2
+    True
 

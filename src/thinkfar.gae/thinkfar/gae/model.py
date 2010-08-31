@@ -1,46 +1,73 @@
 
-from google.appengine.ext import db
+from google.appengine.ext.db import Model, FloatProperty, StringProperty, BooleanProperty
+from google.appengine.ext.db import TextProperty, DateProperty
+from google.appengine.ext.db import UserProperty, ReferenceProperty, SelfReferenceProperty
 
 
-class Portfolio(db.Model):
-    owner = db.UserProperty() # required=True)
-    name = db.StringProperty(required=True)
+class Portfolio(Model):
+    owner = UserProperty(required=True)
+    name = StringProperty(required=True, default=u'Default Portfolio')
 
     def __repr__(self):
-        return u'<%s object name="%s" owner="%s">' % \
-            (self.__class__.__name__, self.name, self.owner)
+        return u'<%s object name=%r owner=%r>' % \
+            (self.__class__.__name__, self.name, self.owner.nickname())
 
-class Account(db.Model):
-    name = db.StringProperty(required=True)
-    group_under = db.SelfReferenceProperty()
-    order_number = db.FloatProperty()
+class Account(Model):
+    name = StringProperty(required=True)
+    group_under = SelfReferenceProperty()
+    order_number = FloatProperty()
 
-class Asset(db.Model):
+class AssetModel(Model):
+    name = StringProperty(required=True)
+    description = StringProperty()
+    long_description = TextProperty()
+
+    def __repr__(self):
+        return u'<%s object name=%r description=%r>' % \
+            (self.__class__.__name__, self.name, self.description)
+
+class Asset(Model):
     """Base asset class"""
-    owner = db.UserProperty(required=True)
-    name = db.StringProperty(required=True)
-    purcase_price = db.FloatProperty()
-    purcase_date = db.DateProperty()
-    sell_price = db.FloatProperty()
-    sell_date = db.DateProperty()
+    portfolio = ReferenceProperty(Portfolio, required=True, collection_name='assets')
+    asset_model = ReferenceProperty(AssetModel, required=True)
+    name = StringProperty(required=True)
+    identity = StringProperty()
+    long_identity = TextProperty()
+
+    @property
+    def has_identity(self):
+        return self.identity is not None
 
     def __repr__(self):
-        return u'<%s object name="%s" owner="%s">' % \
-            (self.__class__.__name__, self.name, self.owner)
+        if self.has_identity:
+            identification = u'identity=%r' % self.identity
+        else:
+            identification = u''
+        return u'<%s object name=%r %s portfolio=%r owner=%r>' % \
+            (self.__class__.__name__, self.name, identification,
+                self.portfolio.name, self.portfolio.owner.nickname())
 
-class EstimatedValue(db.Model):
+class Trade(Model):
+    """Asset trade"""
+    trade_asset = ReferenceProperty(Asset, required=True, collection_name='trades')
+    trade_ammount = FloatProperty(required=True)
+    trade_date = DateProperty(required=True)
+    trade_price = FloatProperty(required=True)
+    trade_cost = FloatProperty(default=0.)
+
+class EstimatedValue(Model):
     """Estimated value including ask/bid spread"""
-    estimated_value_date = db.DateProperty()
-    estimated_value_ask = db.FloatProperty()
-    estimated_value_bid = db.FloatProperty()
+    estimated_value_date = DateProperty()
+    estimated_value_ask = FloatProperty()
+    estimated_value_bid = FloatProperty()
 
-class Liability(db.Model):
-    owner = db.UserProperty()
-    name = db.StringProperty(required=True)
-    group_under = db.SelfReferenceProperty()
-    outstanding_debt = db.FloatProperty()
-    market_price = db.FloatProperty()
+class Liability(Model):
+    owner = UserProperty()
+    name = StringProperty(required=True)
+    group_under = SelfReferenceProperty()
+    outstanding_debt = FloatProperty()
+    market_price = FloatProperty()
 
     def __repr__(self):
         return u'<%s object name="%s" owner="%s">' % \
-            (self.__class__.__name__, self.name, self.owner)
+            (self.__class__.__name__, self.name, self.owner.nickname())
