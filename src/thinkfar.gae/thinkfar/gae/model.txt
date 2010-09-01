@@ -31,19 +31,30 @@ I've got a bike.
 
     >>> bike = Asset(asset_model=big_ticket_item, name=u'Bike', 
     ...     identity=u'My good looking bike', portfolio=piper_belongings)
-    >>> purcase_date=date(1967, 3, 23)
-    >>> bike.purcase_price = 100.
     >>> bike
     <Asset object name=u'Bike' identity=u'My good looking bike' portfolio=u'Piper Belongings' owner=u'syd@pf.com'>
     >>> bike_key = bike.put()
+    >>> bike.buy(date=date(1967, 3, 23), price=100.)
+    >>> bike.balance(date(1967, 3, 22))
+    0.0
+    >>> bike.balance(date(1967, 3, 23))
+    1.0
 
-I've got a clan of gingerbread men.
+I've got a clan of gingerbread men. Here a man, there a man, lots of gingerbread men.
 
     >>> clan = Asset(asset_model=commodity_stock, name='Clan of gingerbread men',
     ...     portfolio=piper_belongings)
-    >>> purcase_date=date(1967, 3, 23)
-    >>> purcese_price=20
     >>> clan_key = clan.put()
+    >>> clan.buy(20., date=date(1967, 3, 22), price=5.)
+    >>> clan.buy(20., date=date(1967, 3, 23), price=5.)
+
+Take a couple if you wish. They're on the dish.
+
+    >>> clan.sell(2., date=date(1967, 3, 24))
+    >>> clan.balance(date(1967, 3, 23))
+    40.0
+    >>> clan.balance(date(1967, 3, 24))
+    38.0
 
 I'll give you anything, everything if you want things.
 

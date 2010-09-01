@@ -1,4 +1,5 @@
 
+
 from google.appengine.ext.db import Model, FloatProperty, StringProperty, BooleanProperty
 from google.appengine.ext.db import TextProperty, DateProperty
 from google.appengine.ext.db import UserProperty, ReferenceProperty, SelfReferenceProperty
@@ -38,6 +39,21 @@ class Asset(Model):
     def has_identity(self):
         return self.identity is not None
 
+    def buy(self, ammount=1., **keys):
+        self.trade(ammount=ammount, **keys)
+
+    def sell(self, ammount=1., price=0., **keys):
+        self.trade(ammount=-ammount, price=price, **keys)
+
+    def trade(self, **keys):
+        trade = Trade(asset=self, **keys)
+        trade.put()
+
+    def balance(self, date):
+        trades = Trade.all().filter('asset =', self.key()).filter('date <=', date).fetch(1000)
+        # return float 0. if no trades for the sake of consistency
+        return 1. * sum(t.ammount for t in trades)
+
     def __repr__(self):
         if self.has_identity:
             identification = u'identity=%r' % self.identity
@@ -49,11 +65,11 @@ class Asset(Model):
 
 class Trade(Model):
     """Asset trade"""
-    trade_asset = ReferenceProperty(Asset, required=True, collection_name='trades')
-    trade_ammount = FloatProperty(required=True)
-    trade_date = DateProperty(required=True)
-    trade_price = FloatProperty(required=True)
-    trade_cost = FloatProperty(default=0.)
+    asset = ReferenceProperty(Asset, required=True, collection_name='trades')
+    ammount = FloatProperty(required=True)
+    date = DateProperty(required=True)
+    price = FloatProperty(required=True)
+    cost = FloatProperty(default=0.)
 
 class EstimatedValue(Model):
     """Estimated value including ask/bid spread"""
