@@ -26,15 +26,12 @@ class RootHandler(RequestHandler):
         self.response.out.write(page.render())
 
 
-def test_view(request):
-    return Response('ciao')
-
 def application():
     """Returns WSGI application object."""
 
     config = Configurator()
     config.begin()
-    config.add_view(test_view)
+    config.load_zcml('configure.zcml')
     config.end()
     app = config.make_wsgi_app()
 
