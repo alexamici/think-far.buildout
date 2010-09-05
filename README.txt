@@ -34,7 +34,7 @@ Testing
 Run all tests by typing the following command::
 
   $ ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
-      --gae-application=src/demo/ src/thinkfar.gae/
+      --gae-application=src/demo/ src/thinkfar/
 
 Running pydoc
 -------------

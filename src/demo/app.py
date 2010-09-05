@@ -27,7 +27,7 @@ import wsgiref.handlers
 import zope.component
 import zope.interface
 
-from thinkfar.gae import application as thinkfar_application
+from thinkfar import application as thinkfar_application
 
 # The global site manager for registering adapters and utilities.
 site_manager = None
