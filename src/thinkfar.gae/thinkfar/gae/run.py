@@ -31,7 +31,8 @@ def application():
 
     config = Configurator()
     config.begin()
-    config.load_zcml('configure.zcml')
+    config.load_zcml()
+#    config.scan()
     config.end()
     app = config.make_wsgi_app()
 

@@ -3,4 +3,10 @@
   <include package="repoze.bfg.includes" />
   <scan package="."/>
 
+  <view
+    name="portfolio"
+    view=".views.portfolio_view"
+    renderer="templates/portfolio.pt"
+    />
+
 </configure>

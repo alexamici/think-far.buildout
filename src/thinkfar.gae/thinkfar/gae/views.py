@@ -1,6 +1,3 @@
 
-
-
-class PortfolioView(object):
-    pass
-
+def portfolio_view(request):
+    return {}
