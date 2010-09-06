@@ -27,7 +27,7 @@ import wsgiref.handlers
 import zope.component
 import zope.interface
 
-from thinkfar.run import application as thinkfar_application
+from thinkfar.run import app as thinkfar_app
 
 # The global site manager for registering adapters and utilities.
 site_manager = None
@@ -176,7 +176,7 @@ def main():
         'session.validate_key': 'secret'
     }
 
-    app = beaker.middleware.SessionMiddleware(thinkfar_application(), session_opts)
+    app = beaker.middleware.SessionMiddleware(thinkfar_app(), session_opts)
 
     google.appengine.ext.webapp.util.run_wsgi_app(app)
 
