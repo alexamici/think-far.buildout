@@ -52,12 +52,13 @@ setup (
     include_package_data=True,
     package_dir = {'': os.sep.join(['src', 'demo'])},
     install_requires=[
-        'thinkfar.gae',
+        'thinkfar',
         'Chameleon',
         'beaker',
         'setuptools',
         'zope.component',
         'zope.interface',
+        'simplejson',
         ],
     zip_safe=False,
     )
