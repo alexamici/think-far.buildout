@@ -14,6 +14,10 @@
 # along with this demo.  If not, see <http://www.gnu.org/licenses/>.
 """Sample application for running ZCA within Google App Engine."""
 
+# Monkeypatches to enable bfg.repoze within GAE
+import os; os.mkdir = None # GAE hasn't os.mkdir
+import appengine_monkey    # installed by buildout
+
 import beaker.middleware
 import chameleon.zpt.loader
 import google.appengine.api
