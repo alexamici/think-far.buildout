@@ -30,12 +30,22 @@ transformers:
     - property: __key__
       external_name: key
       export_transform: transform.key_id_or_name_as_string
-      
     - property: name
       external_name: name
-      
     - property: description
       external_name: description
-      
     - property: long_description
       external_name: long_description
+
+- kind: Portfolio
+  connector: csv
+  connector_options:
+  property_map:
+    - property: __key__
+      external_name: key
+      export_transform: transform.key_id_or_name_as_string
+    - property: name
+      external_name: name
+    - property: owner
+      external_name: owner
+      import_transform: users.User
