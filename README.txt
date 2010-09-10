@@ -27,6 +27,11 @@ For a more detailed documentation follow this url::
 
   http://code.google.com/appengine/docs/python/tools/uploadinganapp.html
 
+Uploading initial data to the remote server:
+
+  ./bin/appcfg upload_data --config_file=bulkloader.yaml \
+    --filename=src/thinkfar/data/AssetModel.csv --kind=AssetModel \
+    parts/demo/
 
 Testing
 -------
