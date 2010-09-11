@@ -61,3 +61,29 @@ transformers:
       external_name: identity
     - property: long_identity
       external_name: long_identity
+
+- kind: Trade
+  connector: csv
+  connector_options:
+  property_map:
+    - property: __key__
+      external_name: key
+      import_transform: transform.create_foreign_key('Trade', key_is_id=True)
+      export_transform: transform.key_id_or_name_as_string
+    - property: asset
+      external_name: asset
+      import_transform: transform.create_foreign_key('Asset', key_is_id=True)
+      export_transform: transform.key_id_or_name_as_string
+    - property: ammount
+      external_name: ammount
+      import_transform: float
+    - property: date
+      external_name: date
+      import_transform: transform.import_date_time('%Y-%M-%d')
+      export_transform: transform.export_date_time('%Y-%M-%d')
+    - property: price
+      external_name: price
+      import_transform: float
+    - property: cost
+      external_name: cost
+      import_transform: float
