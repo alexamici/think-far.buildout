@@ -41,9 +41,20 @@ Run all tests by typing the following command::
   $ ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
       --gae-application=src/demo/ src/thinkfar/
 
+optionally with HTML coverage:
+
+  $ ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
+      --gae-application=src/demo/ --with-coverage --cover-package=thinkfar \
+      --cover-html-dir=coverage/ --cover-html src/thinkfar/
+
+then connect to:
+
+  firefox ./coverage/index.html
+
 Running pydoc
 -------------
 
 To run pydoc with the correct import paths enter following command::
 
   $ ./bin/python /path/to/python/bin/pydoc -p <PORT>
+
