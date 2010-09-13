@@ -79,8 +79,8 @@ transformers:
       import_transform: float
     - property: date
       external_name: date
-      import_transform: transform.import_date_time('%Y-%M-%d')
-      export_transform: transform.export_date_time('%Y-%M-%d')
+      import_transform: transform.import_date_time('%Y-%m-%d')
+      export_transform: transform.export_date_time('%Y-%m-%d')
     - property: price
       external_name: price
       import_transform: float
