@@ -74,8 +74,8 @@ transformers:
       external_name: asset
       import_transform: transform.create_foreign_key('Asset', key_is_id=True)
       export_transform: transform.key_id_or_name_as_string
-    - property: ammount
-      external_name: ammount
+    - property: amount
+      external_name: amount
       import_transform: float
     - property: date
       external_name: date
@@ -84,6 +84,6 @@ transformers:
     - property: price
       external_name: price
       import_transform: float
-    - property: cost
-      external_name: cost
+    - property: value
+      external_name: value
       import_transform: float
