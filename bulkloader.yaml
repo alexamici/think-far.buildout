@@ -81,9 +81,9 @@ transformers:
       external_name: date
       import_transform: transform.import_date_time('%Y-%m-%d')
       export_transform: transform.export_date_time('%Y-%m-%d')
-    - property: price
-      external_name: price
+    - property: buyer_price
+      external_name: buyer_price
       import_transform: float
-    - property: value
-      external_name: value
+    - property: seller_value
+      external_name: seller_value
       import_transform: float
