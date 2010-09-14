@@ -45,7 +45,7 @@ optionally with HTML coverage:
 
   $ ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
       --gae-application=src/demo/ --with-coverage --cover-package=thinkfar \
-      --cover-html-dir=coverage/ --cover-html src/thinkfar/
+      --cover-html-dir=coverage/ --cover-html --cover-erase src/thinkfar/
 
 then connect to:
 
