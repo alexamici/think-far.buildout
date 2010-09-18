@@ -51,7 +51,7 @@ transformers:
       export_transform: transform.key_id_or_name_as_string
     - property: asset_model
       external_name: asset_model
-      import_transform: transform.create_foreign_key('Portfolio', key_is_id=True)
+      import_transform: transform.create_foreign_key('AssetModel', key_is_id=True)
       export_transform: transform.key_id_or_name_as_string
     - property: name
       external_name: name
