@@ -23,7 +23,7 @@ transformers:
     - property: description
       external_name: description
 
-- kind: Account
+- kind: AccountDefinition
   connector: csv
   connector_options:
   property_map:
