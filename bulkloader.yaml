@@ -23,6 +23,23 @@ transformers:
     - property: description
       external_name: description
 
+- kind: Account
+  connector: csv
+  connector_options:
+  property_map:
+    - property: __key__
+      external_name: key
+      import_transform: transform.create_foreign_key('Account', key_is_id=True)
+      export_transform: transform.key_id_or_name_as_string
+    - property: name
+      external_name: name
+    - property: description
+      external_name: description
+    - property: parent_account
+      external_name: parent_account
+      import_transform: transform.create_foreign_key('Account', key_is_id=True)
+      export_transform: transform.key_id_or_name_as_string
+
 - kind: Portfolio
   connector: csv
   connector_options:
