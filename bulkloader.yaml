@@ -22,6 +22,8 @@ transformers:
       external_name: name
     - property: description
       external_name: description
+    - property: parent_account_code
+      external_name: parent_account_code
 
 - kind: AccountDefinition
   connector: csv
@@ -31,13 +33,15 @@ transformers:
       external_name: key
       import_transform: transform.create_foreign_key('Account', key_is_id=True)
       export_transform: transform.key_id_or_name_as_string
+    - property: code
+      external_name: code
     - property: name
       external_name: name
     - property: description
       external_name: description
     - property: parent_account
       external_name: parent_account
-      import_transform: transform.create_foreign_key('Account', key_is_id=True)
+      import_transform: transform.create_foreign_key('AccountDefinition', key_is_id=True)
       export_transform: transform.key_id_or_name_as_string
 
 - kind: Portfolio
