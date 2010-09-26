@@ -39,6 +39,9 @@ transformers:
       external_name: name
     - property: description
       external_name: description
+    - property: in_balance_sheet
+      external_name: in_balance_sheet
+      import_transform: bool
     - property: parent_account
       external_name: parent_account
       import_transform: transform.create_foreign_key('AccountDefinition', key_is_id=True)
