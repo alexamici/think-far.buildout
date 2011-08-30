@@ -11,23 +11,18 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from thinkfar.run import app
 
 settings = {
-    'reload_templates': 'false',
-    'debug_authorization': 'false',
-    'debug_notfound': 'false',
-    'debug_templates': 'false',
+    'reload_templates': 'true',
+    'debug_authorization': 'true',
+    'debug_notfound': 'true',
+    'debug_templates': 'true',
     'default_locale_name': 'en',
 }
 
 def main():
     """ This function runs a Pyramid WSGI application.
     """
-    
-    # config = Configurator(root_factory=get_root,settings=settings)
-    # config.add_view('views.my_view',
-    #                 context='models.MyModel',
-    #                 renderer='templates/mytemplate.pt')
-    # app= config.make_wsgi_app()
-    run_wsgi_app(app)
-            
+    run_wsgi_app(app())
+
+
 if __name__ == '__main__':
   main() 
