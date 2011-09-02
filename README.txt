@@ -2,6 +2,11 @@
 Think-Far application
 =====================
 
+Dependencies
+------------
+
+    sudo apt-get install xutils-dev    # for lndir
+
 Running the application out of the box
 --------------------------------------
 
