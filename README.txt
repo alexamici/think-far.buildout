@@ -1,3 +1,5 @@
+Copyright (c) 2010-2011 Alessandro Amici. All rights reserved.
+
 =====================
 Think-Far application
 =====================
