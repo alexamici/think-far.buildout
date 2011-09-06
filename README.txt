@@ -28,7 +28,7 @@ Uploading and managing
 
 To upload application files, run::
 
-    ./bin/appcfg update ./app
+    ./bin/appcfg update ./app/
 
 For a more detailed documentation follow this url::
 
@@ -38,7 +38,7 @@ Uploading initial data to the remote server:
 
     ./bin/appcfg upload_data --config_file=bulkloader.yaml \
         --filename=src/thinkfar/data/AssetModel.csv --kind=AssetModel \
-        ./app
+        ./app/
 
 Testing
 -------
@@ -46,12 +46,12 @@ Testing
 Run all tests by typing the following command::
 
     ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
-        --gae-application=src/demo/ src/thinkfar/
+        --gae-application=./app/ src/thinkfar/
 
 optionally with HTML coverage:
 
     ./bin/nosetests --with-doctest --doctest-extension=txt --with-gae \
-        --gae-application=src/demo/ --with-coverage --cover-package=thinkfar \
+        --gae-application=./app/ --with-coverage --cover-package=thinkfar \
         --cover-html-dir=coverage/ --cover-html --cover-erase src/thinkfar/
 
 then connect to:
