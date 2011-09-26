@@ -7,7 +7,15 @@ Think-Far application
 Dependencies
 ------------
 
-    sudo apt-get install xutils-dev    # for lndir
+ * Python 2.5
+
+    sudo add-apt-repository ppa:fkrull/deadsnakes
+    sudo apt-get update
+    sudo apt-get -y install python2.5-dev
+
+ * lndir
+
+    sudo apt-get -y install xutils-dev
 
 Running the application out of the box
 --------------------------------------
