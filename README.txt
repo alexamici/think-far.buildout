@@ -11,7 +11,7 @@ Dependencies
 
     sudo add-apt-repository ppa:fkrull/deadsnakes
     sudo apt-get update
-    sudo apt-get -y install python2.5-dev
+    sudo apt-get -y install python2.5-dev build-essential
 
  * lndir
 
