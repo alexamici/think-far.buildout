@@ -1,7 +1,8 @@
-application: think-far
-version: 1-3-0
+application: beyondtheendofyournose
+version: 1
 runtime: python
 api_version: 1
+threadsafe: yes
 
 default_expiration: "4d 5h"
 
@@ -38,19 +39,19 @@ handlers:
   expiration: "30d"
 
 
-- url: /stats.*
-  script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
+#- url: /stats.*
+#  script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
 
-- url: /admin/.*
-  script: $PYTHON_LIB/google/appengine/ext/admin
-  login: admin
+#- url: /admin/.*
+#  script: $PYTHON_LIB/google/appengine/ext/admin
+#  login: admin
 
-- url: /remote_api
-  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
-  login: admin
+#- url: /remote_api
+#  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+#  login: admin
 
 
-- url: .*
+- url: /.*
   script: main.py
 
 
